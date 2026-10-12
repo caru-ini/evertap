@@ -1,0 +1,6 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "evertap",
+  "description": "One box that hands out PostgreSQL, MySQL, Redis, and S3-compatible buckets for development, from a web UI and a CLI.",
+  "folders": ["docs"]
+}
