@@ -5,6 +5,12 @@ Notable changes to evertap are listed here, and versions follow
 [git-cliff](https://git-cliff.org) writes each release's section from the subjects of its
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
+## [0.1.1](https://github.com/caru-ini/evertap/compare/v0.1.0...v0.1.1) - 2026-10-12
+
+### Bug Fixes
+
+- _(server)_ Show PostgreSQL's errors and run multi-statement SQL again
+
 ## [0.1.0](https://github.com/caru-ini/evertap/releases/tag/v0.1.0) - 2026-10-12
 
 ### Added
