@@ -232,6 +232,9 @@ const LIST_EXTENSIONS = `cd "$(pg_config --sharedir)/extension" && for f in *.co
 
 type Result = Row[] & { count?: unknown; command?: string };
 
+/** Thrown inside the cursor's transaction so that `begin` rolls it back: its COMMIT would fail. */
+class NoCursor extends Error {}
+
 /**
  * Reads at most `QUERY_ROWS_MAX + 1` rows of one query through a cursor, so a huge result is never
  * buffered. Null when the text is not a single statement a cursor takes; it then runs as it is.
@@ -240,26 +243,33 @@ const fetchCapped = async (client: SQL, text: string) => {
   if (!ROW_STATEMENT.test(text)) {
     return null;
   }
-  // An object, not the rows: `begin` rebuilds a returned array and drops its command and count.
-  const fetched = await client.begin(async (tx) => {
-    try {
-      // A tagged query goes through the extended protocol, which refuses several statements.
-      await tx`DECLARE evertap_run NO SCROLL CURSOR FOR ${tx.unsafe(text)}`;
-    } catch (error) {
-      // Several statements, SELECT INTO, a data-modifying WITH: the plain run reports real errors.
-      if (
-        error instanceof SQL.PostgresError &&
-        error.errno !== undefined &&
-        error.errno !== "57014"
-      ) {
-        return null;
+  try {
+    // An object, not the rows: `begin` rebuilds a returned array and drops its command and count.
+    const fetched = await client.begin(async (tx) => {
+      try {
+        // A tagged query goes through the extended protocol, which refuses several statements.
+        await tx`DECLARE evertap_run NO SCROLL CURSOR FOR ${tx.unsafe(text)}`;
+      } catch (error) {
+        if (
+          error instanceof SQL.PostgresError &&
+          error.errno !== undefined &&
+          error.errno !== "57014"
+        ) {
+          throw new NoCursor();
+        }
+        throw error;
       }
-      throw error;
+      const rows: Result = await tx.unsafe(`FETCH ${QUERY_ROWS_MAX + 1} FROM evertap_run`);
+      return { rows };
+    });
+    return fetched.rows;
+  } catch (error) {
+    // Several statements, SELECT INTO, a data-modifying WITH: the plain run reports real errors.
+    if (error instanceof NoCursor) {
+      return null;
     }
-    const rows: Result = await tx.unsafe(`FETCH ${QUERY_ROWS_MAX + 1} FROM evertap_run`);
-    return { rows };
-  });
-  return fetched?.rows ?? null;
+    throw error;
+  }
 };
 
 /**
