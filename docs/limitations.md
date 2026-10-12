@@ -1,0 +1,176 @@
+---
+title: Limitations
+---
+
+evertap is early: this page lists what it does not do, what has not been tested, how to upgrade and
+uninstall it, and answers to common questions.
+
+## Not in this version
+
+These are planned, but not in v0.1:
+
+- MCP for agents (`evertap mcp`). Agents use the CLI, which `evertap skills install` teaches them
+  ([Coding agents](cli.md#coding-agents)).
+- `evertap connect` starting on its own when an app connects, with `ev.internal` set up by
+  `evertap login`. For now, run `evertap connect` in a terminal and add the hosts line yourself.
+- `evertap update` and `evertap repair`. Upgrade with the install script ([below](#upgrade)).
+- Backups, restore, and export. Back up the Docker volumes yourself if you need to. A temporary
+  resource is deleted after 7 days without a connection.
+- Connecting from serverless and preview deployments, which cannot run `evertap connect`.
+- A short `ev` command.
+- evertap itself running on Windows, and apps in containers reaching `ev.internal`.
+
+## Never
+
+evertap hands out databases and buckets for development, and stays that small. It does not and
+will not:
+
+- Deploy apps, connect to git, or manage domains and certificates
+- Group resources into projects or environments
+- Give you a shell, a terminal, or raw logs on the machine running it
+- Set up Tailscale or WireGuard (you can use Tailscale with it: [Tailscale](modes.md#tailscale))
+- Read resources from a configuration file
+- Serve production traffic. Use evertap for development, CI, and previews, not as a production
+  database.
+
+## Known limits
+
+- **Apps in containers** do not reach `ev.internal`, on a laptop or on the machine running evertap.
+  An app that runs in Docker keeps its database in its own Compose file.
+- **Apps on the machine running evertap**, in `network` and `cloudflare` mode, do not reach
+  `ev.internal` either: `evertap connect` is for other machines. Use `local` mode on a machine that
+  runs both evertap and your apps.
+- **Presigned URLs** open only where `evertap connect` runs, or on the machine running evertap in
+  `local` mode, unless the bucket is reachable from anywhere, which takes `network` or `cloudflare`
+  mode and an address of buckets' own
+  ([Signed links that work anywhere](connecting.md#signed-links-that-work-anywhere)).
+- **Buckets** have no versioning, object lock, bucket policies, ACLs, tags, or conditional writes
+  ([Buckets](connecting.md#buckets)).
+- **Roles your app creates** in a PostgreSQL database cannot log in through evertap. Connect as
+  the database's own user and use `SET ROLE`
+  ([Databases and roles your app creates](connecting.md#databases-and-roles-your-app-creates)).
+- **Users your app creates** in a MySQL database cannot log in through evertap either. Only the
+  user in the database's URL can ([MySQL](connecting.md#mysql)).
+- **MariaDB's `mysql` client**, 11.4 and later, refuses the MySQL entry's self-signed certificate
+  unless given `--ssl-verify-server-cert=0` ([MySQL](connecting.md#mysql)).
+- **Redis clients** have to send the user in the URL. A password alone is refused
+  ([Redis](connecting.md#redis)).
+- **A database's version is fixed** when it is created. To move to another, create a new database
+  and copy the data.
+- **Every client has the same rights.** A paired CLI or an API key can use and delete every resource
+  that is not protected. There are no scopes, roles, or expiry dates.
+- **The macOS loopback alias** that `evertap connect` asks for lasts until the Mac restarts.
+- **Under WSL**, Windows apps do not reach `ev.internal`, and WSL drops the `ev.internal` line when it
+  starts unless told not to ([Windows](connecting.md#windows)).
+- **Old images stay on disk.** When an evertap upgrade brings newer images, the old ones stay until
+  you remove them ([Upgrade](#upgrade)).
+- **Run evertap where you trust every account.** evertap reaches each database on a loopback port
+  that Docker picks again whenever the database restarts. Another account on the same machine could
+  listen on the old port first and receive what evertap sends there.
+
+## Not tested yet
+
+evertap is tested on Linux. These have not been tried end to end:
+
+- macOS, as the machine running evertap or as a laptop: setup's sudo steps, the loopback alias after
+  a restart, and Docker Desktop, OrbStack, and Colima
+- WSL, including keeping the `ev.internal` line with `generateHosts = false`
+- Traefik and Tailscale Serve in front of evertap, and nginx with a real certificate
+- A proxy run with Docker on a machine whose firewall drops incoming connections by default, such as
+  `ufw default deny incoming`. Its connections to Docker's bridge address may need allowing, for
+  example with `ufw allow in on docker0 to any port 8080`, and the same for the `br-…` interface of
+  its Compose network.
+- Rootless Docker with a proxy run with Docker
+- Cloudflare's Bot Fight Mode in front of `evertap login` and `evertap connect`
+- Creating a Cloudflare Tunnel against Cloudflare itself, by approving evertap there or with an API
+  token: its calls are tested against a stand-in for Cloudflare's API and OAuth pages, and the token
+  link's Cloudflare Tunnel and Cache Rules permissions against none
+
+If you try one, an issue with what happened helps.
+
+## Upgrade
+
+evertap checks once a day whether a newer release is out. When one is, the UI's sidebar, the Doctor,
+`evertap doctor`, and the log say so, with what to run. On a laptop, `evertap doctor` and
+`evertap connect` say when its evertap is older than the one it uses. To stop the check, set
+`EVERTAP_UPDATE_CHECK=0` ([What evertap connects to](security.md#what-evertap-connects-to)).
+
+Run the install script again, and give the same answer as when you installed it. It keeps your
+settings and skips setup:
+
+```sh
+curl -fsSL https://evertap.dev/install.sh | sh
+```
+
+On the machine that runs evertap under systemd, it also restarts evertap and waits up to 30 seconds
+for it to answer. If the new version does not answer, the script goes back: it puts the previous
+binary back from `evertap.prev`, and evertap's records from before if the new version had already
+changed their format, starts evertap again, and ends with the `journalctl` command that shows why
+the new version did not start. Without systemd, restart `evertap serve` yourself.
+
+- Upgrade your laptops and CI too. When the CLI and evertap no longer speak the same version of
+  their connection protocol, `evertap connect` says which machine to upgrade.
+- On start, evertap replaces each of its containers whose image or settings changed, and keeps
+  their data. A database restarts once.
+- The images the old containers ran stay on disk. `docker image prune -a` removes them, along with
+  every other image no container uses.
+- Before an upgrade changes the format of `evertap.db`, evertap keeps a copy beside it, named
+  `evertap.db.v<version>-<time>.bak`. An older evertap refuses to open a file a newer one has
+  changed, so going back puts that copy in its place.
+
+## Uninstall
+
+On the machine running evertap, stop it, then remove everything it made, every database's data
+included:
+
+```sh
+sudo systemctl disable --now evertap@$USER
+evertap uninstall
+```
+
+`evertap uninstall` lists what it removes and asks you to type `uninstall` ([CLI](cli.md)). Then
+remove what the install script installed, and the settings you made for the service:
+
+```sh
+sudo rm -rf /etc/systemd/system/evertap@.service /etc/systemd/system/evertap@.service.d
+sudo rm -f /usr/local/bin/evertap /usr/local/bin/evertap.prev
+sudo rm -rf /etc/evertap
+sudo systemctl daemon-reload
+```
+
+The images evertap downloaded stay; `docker image prune -a` removes them with every other unused
+image.
+
+On a laptop, stop `evertap connect`, run `evertap uninstall` to sign out and remove the agent skill
+and the `ev.internal` line, and delete the binary. On macOS, the loopback alias goes away at the
+next restart, or now with `sudo ifconfig lo0 -alias 127.77.0.1`.
+
+## Questions
+
+### Why `ev.internal`?
+
+ICANN reserved `.internal` for private use in 2024, so it never resolves on the internet, and the
+name cannot lead anywhere else. `.local` belongs to mDNS, which can make lookups slow on macOS.
+`localhost` would clash with databases you run yourself, and browsers send `localhost` cookies to
+every port, so evertap's sign-in would reach your app on `localhost:3000`.
+
+### Why the standard ports?
+
+So a connection URL is the same for every version, in every mode, and wherever evertap runs. Your
+`.env` never changes, and tools that assume 5432 or 6379 keep working. evertap tells databases apart
+by the user in the URL, not by the port.
+
+### Why `127.77.0.1`?
+
+A loopback address of its own leaves `127.0.0.1` free, so a database you run yourself on
+`127.0.0.1:5432` and evertap's `ev.internal:5432` work side by side.
+
+### Does changing the mode touch my data?
+
+No. The mode changes only how evertap is reached. Databases, buckets, and connection details stay
+as they are.
+
+### Can several people share one evertap?
+
+Yes. Each person signs in their own browser and pairs their own laptop, and each appears under
+Clients. Everyone has the same rights, so share it only with people you trust with every resource.

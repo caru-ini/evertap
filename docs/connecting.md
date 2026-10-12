@@ -1,0 +1,384 @@
+---
+title: Connect from your laptop
+---
+
+Create a database or bucket in the UI with New resource, or with the CLI on the machine running
+evertap or a paired laptop:
+
+```sh
+evertap create postgres blog
+```
+
+Either shows its connection details. Every database URL and bucket endpoint points at `ev.internal`
+on the engine's standard port:
+
+| Service    | In the connection details                                  |
+| ---------- | ---------------------------------------------------------- |
+| PostgreSQL | `postgres://<user>:<password>@ev.internal:5432/<database>` |
+| MySQL      | `mysql://<user>:<password>@ev.internal:3306/<database>`    |
+| Redis      | `redis://<user>:<password>@ev.internal:6379/0`             |
+| Bucket     | Endpoint `http://ev.internal:3900`, region `us-east-1`     |
+
+The address is the same in every mode, for every version, and on every machine, so a project's
+`.env` does not change when you change how evertap is reached or work from another laptop.
+`evertap env <name>` prints the lines to paste:
+
+```sh
+DATABASE_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/evertap_k3x9q2m7v1ab
+```
+
+```sh
+AWS_ENDPOINT_URL_S3=http://ev.internal:3900
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=…
+AWS_SECRET_ACCESS_KEY=…
+S3_BUCKET=photos
+S3_FORCE_PATH_STYLE=true
+AWS_REQUEST_CHECKSUM_CALCULATION=when_required
+AWS_RESPONSE_CHECKSUM_VALIDATION=when_required
+```
+
+A PostgreSQL URL names a user and database that evertap generates, so the database's name in evertap
+is only a label.
+
+What makes `ev.internal` reach evertap depends on the mode:
+
+- In `local` mode, evertap itself listens at `ev.internal` on the machine it runs on, and setup
+  already pointed the name there. Apps on that machine connect with nothing more to do.
+- In `network` and `cloudflare` mode, each laptop runs `evertap connect`, which listens at
+  `ev.internal` and carries each connection to evertap. The rest of this page sets that up.
+
+## Pair the laptop
+
+[Install evertap](install.md#install-the-binary) on the laptop with the install script, and answer
+that it is a laptop that connects to evertap on another machine. It needs no Docker. Then pair it
+with evertap:
+
+```sh
+evertap login https://evertap.example.com
+```
+
+Give the address you open evertap at, such as `https://evertap.example.com` or
+`http://192.168.1.20:8080`. Without `http://` or `https://`, an IP address, `localhost`, or a
+`.local` name gets `http://`, and any other name gets `https://`.
+
+`login` prints a code and opens the approval page, `<address>/device?code=…`, in your browser. In a
+browser that is signed in to evertap, check that the code matches the one in your terminal, and
+approve it. On a laptop without a browser, open `<address>/device` on any signed-in device and type
+the code. The code expires in 10 minutes.
+
+`login` saves the address and this laptop's token in `~/.config/evertap/config.json`, readable by
+your user alone. Over plain `http://` to another machine, it warns you: anyone watching that network
+can read the token and act as you. The laptop then appears under Clients in the UI, where you can
+revoke it. `evertap logout` revokes the token and forgets the address.
+
+## Run evertap connect
+
+```sh
+evertap connect
+```
+
+It listens on `127.77.0.1` at 5432, 3306, 6379, and 3900, and carries every connection over its
+own WebSocket to evertap's address. Keep it running while you work, in its own terminal; stop it with
+Ctrl+C.
+
+The first time, point `ev.internal` at `127.77.0.1`. `connect` prints the command until the line is
+there.
+
+### Linux
+
+```sh
+echo "127.77.0.1 ev.internal" | sudo tee -a /etc/hosts
+```
+
+Linux answers on all of `127.0.0.0/8`, so the address needs nothing else.
+
+### macOS
+
+macOS has only `127.0.0.1` on loopback, so `connect` first asks you to add the address:
+
+```sh
+sudo ifconfig lo0 alias 127.77.0.1 netmask 255.255.255.255
+echo "127.77.0.1 ev.internal" | sudo tee -a /etc/hosts
+```
+
+The alias lasts until the Mac restarts. Run the `ifconfig` line again after a restart, before
+`evertap connect`.
+
+### Windows
+
+There is no Windows build. Run the CLI and your apps inside WSL and follow the Linux steps. Windows
+apps outside WSL do not reach `ev.internal` there, because WSL passes only `127.0.0.1` on to
+Windows.
+
+WSL writes a new `/etc/hosts` each time it starts, which drops the `ev.internal` line. To keep it,
+add this to `/etc/wsl.conf` in WSL, and restart WSL with `wsl --shutdown` from Windows:
+
+```ini
+[network]
+generateHosts = false
+```
+
+### Check it
+
+```sh
+evertap status                    # which evertap this CLI uses, and whether it is signed in
+psql "$(evertap url blog)"        # connects through ev.internal
+```
+
+### When a port is taken
+
+If something on the laptop already holds one of the ports on every address, `connect` says which
+port, what likely holds it, and the command that shows it, such as
+`sudo lsof -nP -iTCP:5432 -sTCP:LISTEN`. The other ports keep working. Something that listens on
+`127.0.0.1` alone does not get in the way, because `127.77.0.1` is a different address.
+
+- `--engine <service>` carries only the services you name, such as
+  `evertap connect --engine postgresql --engine redis`.
+- `--host <address>` listens on another address. Point `ev.internal` at it instead, since the
+  connection details still say `ev.internal`. An address other machines can reach lets anyone there
+  use your connections with your sign-in, leaving only each database's password in the way, and
+  `connect` warns about it.
+
+### Databases you still run with Compose
+
+Publish them on `127.0.0.1`, which leaves `127.77.0.1` free:
+
+```yaml
+services:
+  db:
+    image: postgres:18
+    ports:
+      - "127.0.0.1:5432:5432"
+```
+
+With `"5432:5432"`, Compose listens on every address: while it runs, `evertap connect` cannot listen
+on 5432, and while `evertap connect` runs, that Compose file fails to start. The same goes for
+evertap itself in `local` mode.
+
+### Apps in containers
+
+An app in a container does not reach `ev.internal`, just as it does not reach your laptop's
+`localhost`. An app that runs in Docker keeps its database in its own Compose file.
+
+## Connection pools
+
+Each new connection opens a WebSocket to evertap, over TLS when evertap's address is `https://`, so
+opening one costs more than with a database on your laptop. Use a connection pool.
+
+Connections can also drop: when evertap restarts, when your network changes, or when a proxy or
+tunnel in between restarts. evertap and `evertap connect` ping each other every 25 seconds and close
+both ends after two pings go unanswered, so your app sees the error instead of waiting. Have the pool
+check a connection before it uses it, and replace connections after about 30 minutes:
+
+| Library           | Setting                                                     |
+| ----------------- | ----------------------------------------------------------- |
+| node-postgres     | `new Pool({ maxLifetimeSeconds: 1800 })`                    |
+| SQLAlchemy        | `create_engine(url, pool_pre_ping=True, pool_recycle=1800)` |
+| Go `database/sql` | `db.SetConnMaxLifetime(30 * time.Minute)`                   |
+| Django            | `CONN_MAX_AGE = 1800` and `CONN_HEALTH_CHECKS = True`       |
+| HikariCP          | `maxLifetime` is 30 minutes by default                      |
+
+## Databases and roles your app creates
+
+Each PostgreSQL database has a PostgreSQL instance of its own, and the user in its URL is a
+superuser there, as `POSTGRES_USER` is in the official Docker image. ORMs and frameworks can create
+and drop databases and roles as they would on a local server: Prisma's shadow database for
+`migrate dev`, `rails db:create` and parallel tests, Django's test databases, Laravel's parallel
+testing, `sqlx database create` and `#[sqlx::test]`.
+
+- To reach a database your app created, change only the database at the end of the URL:
+  `postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/myapp_test`. The `postgres` and `template1`
+  databases are there too, for tools that connect to them to create and drop others.
+- Extensions you pick at creation are also in `template1`, so databases created later have them.
+- A role your app creates works with `SET ROLE`, but cannot log in through evertap, which routes
+  each connection by the user in its URL.
+- Each connection is a session of its own, as with a local server: `SET`, `LISTEN` and `NOTIFY`,
+  advisory locks, temporary tables, and prepared statements last until you disconnect, and
+  cancelling a query works. Closing the connection ends the session and releases its locks.
+- Logical replication is on (`wal_level=logical`), for tools such as Electric and Debezium.
+- evertap does not offer PostgreSQL's own TLS: keep `sslmode` at its default, `prefer`, or set
+  `disable`, since `require` fails. From a laptop, `evertap connect` carries the connection over
+  your evertap address, encrypted when that is `https://`.
+
+### MySQL
+
+Each MySQL database also has a MySQL instance of its own, and the user in its URL holds every
+privilege there, as root does on a server you run yourself. ORMs and frameworks can create and drop
+databases of any name, such as Prisma's shadow database and the test databases of Rails and Laravel,
+and create triggers, stored functions, and the views and routines of a dump that names other
+definers.
+
+- To reach a database your app created, change only the database at the end of the URL:
+  `mysql://evertap_k3x9q2m7v1ab:…@ev.internal:3306/myapp_test`.
+- A connection whose URL names no database starts in `information_schema`, which cannot be dropped,
+  so a tool that connects that way to create a database still can after your app dropped its own.
+  Name a database or `USE` one before you create tables.
+- A user your app creates cannot log in through evertap, which routes each connection by the user
+  in its URL.
+- Each connection keeps one session until you disconnect, so `SET`, user variables, temporary
+  tables, prepared statements, and locks such as `GET_LOCK` last, and cancelling a query works.
+  Closing the connection ends the session and releases its locks.
+- The data browser shows the database in the URL. If your app drops it, create it again, as your
+  framework's `db:create` does.
+
+The `mysql` client takes no `mysql://` URL, so the `mysql` command on the resource's page in the UI
+gives each part of it as an option.
+
+MariaDB's `mysql` client, 11.4 and later, such as the `mysql` command on Debian 13, checks the
+server's certificate by default. The certificate evertap's MySQL entry offers is self-signed, so
+that client stops at `ev.internal` with "TLS/SSL error: Certificate verification failure". Add
+`--ssl-verify-server-cert=0` to the command; the connection is still encrypted. Oracle's `mysql` 8
+and later does not check the certificate unless asked, and refuses that option, so the command on
+the page leaves it out.
+
+## Redis
+
+Each Redis database is a Redis instance of its own, and the user in its URL can run every command
+there, such as `FLUSHALL` and `SELECT`, without reaching another resource's keys.
+
+- Connect with the user in the URL: evertap routes each connection by that user. A client that
+  sends only the password, as `AUTH <password>` or from a URL without a user such as
+  `redis://:<password>@ev.internal:6379/0`, is refused with `WRONGPASS`. Clients that support the
+  users Redis 6 added, `redis-cli -u` included, read the user from the URL.
+- The data browser shows the keys in database 0, the one at the end of the URL. Keys your app keeps
+  in another, such as `/1`, work as usual but do not show there.
+
+## Buckets
+
+Use the endpoint with path-style addressing, since `<bucket>.ev.internal` does not resolve. No AWS
+SDK reads `S3_FORCE_PATH_STYLE`, so pass it in code: `forcePathStyle: true` in the AWS SDK for
+JavaScript, or `Config(s3={"addressing_style": "path"})` in boto3.
+
+A bucket resource is an access key and a first bucket with the resource's name. The key can create
+more buckets with any name, as tests, rclone, and `aws s3 mb` do. Each key keeps its buckets' names
+to itself, so two projects can both have an `uploads` bucket without seeing each other's. The data
+browser shows every bucket of the key, its size counts them all, and deleting the resource deletes
+them all. The first bucket stays until then: its key cannot delete it, and creating it again
+answers `BucketAlreadyOwnedByYou`, which tools take as done.
+
+The last two `.env` lines are read by the AWS SDKs and the AWS CLI. Their versions since January
+2025 add checksums to uploads by default, and Garage, which serves the buckets, fails some of them:
+uploads to a presigned PUT link, some streaming uploads, and reading back an object uploaded in
+parts. With both set to `when_required`, the SDK sends and checks a checksum only where an
+operation needs one. An app that does not load `.env` into its environment sets the same in code,
+such as `requestChecksumCalculation: "WHEN_REQUIRED"` and `responseChecksumValidation:
+"WHEN_REQUIRED"` in the AWS SDK for JavaScript.
+
+Buckets take a request signed for the region `us-east-1` and refuse any other. Garage covers the
+S3 calls apps make for objects, but not these:
+
+- ACLs. evertap answers them itself so that libraries which send them, such as Laravel's
+  `Storage::copy`, keep working: setting one succeeds and changes nothing, and reading one says the
+  key has full control. A bucket is never public; share an object with a signed link.
+- Conditional writes. `If-None-Match: *` is ignored, and the object is replaced.
+- Versioning, object lock, bucket policies, event notifications, and object tags.
+- Lifecycle rules other than expiring objects and aborting unfinished uploads.
+
+Presigned URLs point at `ev.internal` too, so they open only where `evertap connect` runs, or on the
+machine running evertap in `local` mode. A page on `http://localhost` can upload to them from the
+browser, as every bucket allows any origin; a page served over HTTPS cannot load an `http://`
+address.
+
+### Signed links that work anywhere
+
+When a link has to open elsewhere, such as in a preview deployment's browser, on a phone, or in an
+outside service that fetches the file, turn on Reachable from anywhere on the bucket's page, or run:
+
+```sh
+evertap reachable photos          # evertap reachable photos --off turns it off
+```
+
+Objects still need a signature: this is not S3's public access, and a link without one is refused.
+It takes `network` or `cloudflare` mode, and an address of buckets' own, such as
+`https://s3.example.com`, that your [proxy](proxies.md#buckets-reached-from-anywhere) or
+[tunnel](cloudflare.md#buckets-reached-from-anywhere) serves. A tunnel that evertap creates serves
+them at the name you gave buckets already. `local` mode does not offer it.
+
+The bucket's endpoint stays at `ev.internal`, so the rest of your app works as before, and its
+`.env` gains one line:
+
+```sh
+S3_PUBLIC_ENDPOINT=https://s3.example.com
+```
+
+Sign links with a second client on that address, and keep your app's client on
+`AWS_ENDPOINT_URL_S3`. Signing happens in your app, so the second client makes no requests:
+
+```js
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+// Only for signing links; every other call keeps to AWS_ENDPOINT_URL_S3
+const signer = new S3Client({
+  endpoint: process.env.S3_PUBLIC_ENDPOINT,
+  forcePathStyle: true,
+});
+
+const url = await getSignedUrl(
+  signer,
+  new PutObjectCommand({ Bucket: process.env.S3_BUCKET, Key: "avatar.png" }),
+  { expiresIn: 3600 },
+);
+```
+
+```python
+import os
+
+import boto3
+from botocore.config import Config
+
+# Only for signing links; every other call keeps to AWS_ENDPOINT_URL_S3
+signer = boto3.client(
+    "s3",
+    endpoint_url=os.environ["S3_PUBLIC_ENDPOINT"],
+    # boto3 reads AWS_DEFAULT_REGION, not AWS_REGION
+    region_name=os.environ["AWS_REGION"],
+    config=Config(signature_version="s3v4", s3={"addressing_style": "path"}),
+)
+
+url = signer.generate_presigned_url(
+    "put_object",
+    Params={"Bucket": os.environ["S3_BUCKET"], "Key": "avatar.png"},
+    ExpiresIn=3600,
+)
+```
+
+- Links are path-style, `https://s3.example.com/photos/avatar.png`: one address cannot hold each
+  bucket's name in its hostname.
+- Form uploads (a presigned POST) work too.
+- Through a Cloudflare Tunnel, see its [limits](cloudflare.md#buckets-reached-from-anywhere).
+
+## CI with an API key
+
+A CI job cannot approve `evertap login`, so it uses an API key instead.
+
+1. In the UI, open Clients → New API key and name it. The key appears once, as
+   `EVERTAP_API_KEY=evertap_…`: evertap keeps only its hash.
+2. Store it as a secret in your CI, and set `EVERTAP_URL` to the address you open evertap at. With
+   both set, the CLI needs no `login`.
+3. In the job, create what the tests need, and carry connections with `evertap connect` as on a
+   laptop:
+
+```sh
+curl -fsSL https://evertap.dev/install.sh | EVERTAP_ROLE=client sh
+name="ci_${GITHUB_RUN_ID}"
+evertap create postgres "$name" --temporary > /dev/null   # keeps the password out of the log
+export DATABASE_URL="$(evertap url "$name")"
+
+echo "127.77.0.1 ev.internal" | sudo tee -a /etc/hosts
+evertap connect --engine postgresql &
+timeout 10 bash -c 'until echo > /dev/tcp/127.77.0.1/5432; do sleep 0.5; done'
+
+# run the tests
+
+evertap delete "$name" --yes
+```
+
+`--temporary` deletes the database after 7 days without a connection, in case the last step never
+runs. The CI runner has to reach evertap's address, so evertap on a home network needs a proxy or a
+tunnel with a public address, or a runner on that network.
+
+An API key can do everything a paired CLI can with resources, including reading their data and
+deleting those that are not protected. It cannot approve sign-ins, create API keys, or revoke
+anything; those stay in the UI. Revoke a key under Clients when it leaks or you stop using it.

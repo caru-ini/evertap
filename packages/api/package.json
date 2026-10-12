@@ -1,0 +1,44 @@
+{
+  "name": "@evertap/api",
+  "version": "0.0.0",
+  "private": true,
+  "homepage": "https://github.com/caru-ini/evertap#readme",
+  "bugs": "https://github.com/caru-ini/evertap/issues",
+  "license": "Apache-2.0",
+  "author": "caru-ini (https://github.com/caru-ini)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caru-ini/evertap.git",
+    "directory": "packages/api"
+  },
+  "type": "module",
+  "exports": {
+    "./callers": "./src/callers.ts",
+    "./connections": "./src/connections.ts",
+    "./context": "./src/context.ts",
+    "./object-links": "./src/object-links.ts",
+    "./proxy": "./src/proxy.ts",
+    "./router": "./src/router.ts",
+    "./rules": "./src/rules.ts",
+    "./schemas": "./src/schemas.ts",
+    "./settings": "./src/settings.ts",
+    "./store/clients": "./src/store/clients.ts",
+    "./store/memory": "./src/store/memory.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@orpc/server": "catalog:",
+    "nanoid": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@evertap/config": "workspace:*",
+    "@orpc/client": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

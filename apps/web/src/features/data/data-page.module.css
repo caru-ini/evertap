@@ -1,0 +1,42 @@
+.page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  outline: none;
+}
+
+.engine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--print-3);
+}
+
+.name {
+  color: var(--print-2);
+}
+
+.note {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--print-2);
+}

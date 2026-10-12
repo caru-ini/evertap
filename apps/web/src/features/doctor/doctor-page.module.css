@@ -1,0 +1,189 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.intro {
+  max-width: 65ch;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--print-2);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-inline: -0.5rem;
+}
+
+.band {
+  display: flex;
+  height: 2.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--panel-2);
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+
+  & svg {
+    width: 1rem;
+    height: 1rem;
+    color: var(--print-2);
+  }
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  min-height: 2.75rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.125rem;
+  padding: 0.5rem;
+
+  & + & {
+    border-top: 1px solid var(--border);
+  }
+
+  @media (width >= 40rem) {
+    grid-template-columns: auto minmax(0, 16rem) minmax(0, 1fr);
+  }
+}
+
+.light {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--seam-2);
+}
+
+.ok {
+  background-color: var(--led);
+}
+
+.busy {
+  background-color: var(--amber);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: blink 1.2s ease-in-out infinite;
+  }
+}
+
+.warning {
+  background-color: var(--amber);
+}
+
+.fault {
+  background-color: var(--fault);
+}
+
+.off {
+  background-color: var(--seam-2);
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.label {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: var(--text-sm--line-height);
+  font-weight: 500;
+}
+
+/* The release's page on GitHub, in a new tab. */
+.release {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.25rem;
+  color: var(--signal);
+  text-underline-offset: 4px;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.external {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.engineIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--print-2);
+}
+
+.mono {
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.125rem;
+  grid-column: 2;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--print-2);
+  font-variant-numeric: tabular-nums;
+
+  @media (width >= 40rem) {
+    grid-column: 3;
+  }
+}
+
+.detail {
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--print-3);
+}

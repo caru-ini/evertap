@@ -1,0 +1,23 @@
+.trigger {
+  color: var(--print-3);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--print);
+    }
+  }
+
+  &[aria-expanded="true"] {
+    color: var(--foreground);
+  }
+
+  @media (width < 40rem) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+.menu {
+  min-width: 14rem;
+  white-space: nowrap;
+}

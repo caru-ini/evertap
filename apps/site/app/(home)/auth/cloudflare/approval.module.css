@@ -1,0 +1,36 @@
+.page {
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.page code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
+.panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--print-2);
+  overflow-wrap: anywhere;
+}
+
+.note {
+  font-size: 0.8125rem;
+  color: var(--print-3);
+}

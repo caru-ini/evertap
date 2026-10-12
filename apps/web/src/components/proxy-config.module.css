@@ -1,0 +1,4 @@
+/* Caddyfiles are indented with tabs. */
+.config {
+  tab-size: 4;
+}

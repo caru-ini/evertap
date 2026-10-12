@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "sortImports": true,
+  "ignorePatterns": [
+    ".claude/**",
+    "**/routeTree.gen.ts",
+    "**/.css-types/**",
+    "apps/server/public/**",
+    "apps/web/public/brands/*.svg",
+    "apps/web/public/brands/*-LICENSE",
+    "apps/site/public/brands/*.svg",
+    "apps/site/public/brands/*-LICENSE",
+    "pnpm-lock.yaml",
+  ],
+}

@@ -1,0 +1,77 @@
+.rows {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7rem, 10rem) minmax(0, 1fr);
+  align-items: center;
+}
+
+.resource {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--seam);
+  border-radius: var(--radius-lg);
+  background-color: var(--panel);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.deleted {
+  border-style: dashed;
+  background-color: transparent;
+  color: var(--print-3);
+  text-decoration: line-through;
+
+  & svg {
+    opacity: 0.4;
+  }
+}
+
+.step {
+  display: grid;
+  gap: 0.125rem;
+  padding: 0 0.5rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--print-3);
+  text-align: center;
+  white-space: nowrap;
+}
+
+@container diagram (width < 40rem) {
+  .rows {
+    gap: 1.5rem;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+  }
+
+  .step {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 0.25rem 0;
+
+    & .label {
+      grid-column: 3;
+      grid-row: 1;
+      justify-self: start;
+      padding-left: 0.5rem;
+    }
+
+    & > :last-child {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+}

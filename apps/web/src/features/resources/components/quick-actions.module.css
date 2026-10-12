@@ -1,0 +1,36 @@
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+
+  @container (width >= 42rem) {
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.25rem;
+  }
+}
+
+.shortcut {
+  @container (width < 42rem) {
+    height: 2.75rem;
+  }
+}
+
+.keys {
+  @container (width < 42rem) {
+    grid-column: span 2 / span 2;
+    height: 2.75rem;
+  }
+}
+
+.iconAction {
+  display: none;
+
+  @container (width >= 42rem) {
+    display: inline-flex;
+  }
+}
+
+.done {
+  color: var(--led);
+}

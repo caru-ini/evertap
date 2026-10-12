@@ -1,0 +1,73 @@
+.panel {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.note {
+  max-width: 65ch;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--print-2);
+}
+
+.mono {
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--print);
+}
+
+.check {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.outcome {
+  font-size: 13px;
+  line-height: 1.25rem;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.reached {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--led-print);
+}
+
+.reachedIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--led);
+}
+
+.problems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-left: 2px solid var(--amber);
+  padding-block: 0.25rem;
+  padding-left: 0.75rem;
+  color: var(--amber-print);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-left: 1rem;
+  list-style: disc;
+}
+
+.failure {
+  color: var(--destructive);
+}

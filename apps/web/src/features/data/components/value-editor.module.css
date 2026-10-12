@@ -1,0 +1,115 @@
+/* Values may hold line breaks, so every value box is a textarea that grows with its content. */
+.value {
+  min-height: 2.25rem;
+  resize: none;
+  border-color: var(--seam-2);
+  padding-block: 0.375rem;
+  font-family: var(--mono);
+  line-height: 1.25rem;
+  overflow-wrap: anywhere;
+
+  &:read-only {
+    background-color: var(--panel-2);
+  }
+}
+
+.stringValue {
+  max-height: 50dvh;
+  min-height: 8rem;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.head {
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--print-3);
+}
+
+.fields,
+.scores {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.fields {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) 2rem;
+
+  @media (width < 40rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 2.75rem;
+  }
+}
+
+.scores {
+  grid-template-columns: 6rem minmax(0, 1fr) 2rem;
+
+  @media (width < 40rem) {
+    grid-template-columns: 5rem minmax(0, 1fr) 2.75rem;
+  }
+}
+
+.entry {
+  display: contents;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.index {
+  width: 2rem;
+  flex-shrink: 0;
+  padding-top: 0.5rem;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--print-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.score {
+  height: 2.25rem;
+  border-color: var(--seam-2);
+  text-align: right;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+
+  &:read-only {
+    background-color: var(--panel-2);
+  }
+}
+
+.remove {
+  color: var(--print-3);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--print);
+    }
+  }
+
+  @media (width < 40rem) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+.add {
+  color: var(--print-2);
+
+  @media (width < 40rem) {
+    height: 2.75rem;
+  }
+}

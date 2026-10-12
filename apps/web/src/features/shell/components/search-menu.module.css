@@ -1,0 +1,26 @@
+/* The dialog hangs from the top third, so the list may use the rest of the height. */
+.list {
+  max-height: min(32rem, calc(66dvh - 4rem));
+}
+
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.engine {
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+.empty {
+  color: var(--print-2);
+}
+
+.dialog {
+  @media (width >= 40rem) {
+    max-width: 36rem;
+  }
+}

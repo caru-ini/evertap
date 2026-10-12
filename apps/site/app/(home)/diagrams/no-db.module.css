@@ -1,0 +1,143 @@
+.panels {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 1.5rem 2.5rem;
+}
+
+.panel {
+  min-width: 0;
+}
+
+.label {
+  margin-bottom: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--print-2);
+}
+
+.projects {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.project {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 2.5rem;
+}
+
+.name {
+  width: 2.5rem;
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--print-3);
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+  padding: 0 0.75rem;
+  border: 1px solid var(--seam);
+  border-radius: var(--radius-lg);
+  background-color: var(--panel);
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.key {
+  color: var(--print-3);
+}
+
+/* Each project picks a port of its own, and they clash. */
+.port {
+  font-weight: 600;
+  color: var(--amber-print);
+}
+
+.after {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+}
+
+.across {
+  display: flex;
+  flex: 1;
+}
+
+.downOnly {
+  display: none;
+}
+
+.evertap {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--seam-2);
+  border-radius: var(--radius-lg);
+  background-color: var(--panel);
+}
+
+.logo {
+  margin-bottom: 0.25rem;
+}
+
+.resource {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 1.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+@container diagram (width < 44rem) {
+  .panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Stacked, each project's line joins one rule down the right, which carries on to evertap. The
+   rule sits where the down arrow's line does: 3.5px in from the right of its 8px head. */
+@container diagram (width < 32rem) {
+  .after {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .after .projects {
+    position: relative;
+    margin-right: 1.5rem;
+    padding-right: 3.5px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 1.25rem;
+      right: 3.5px;
+      bottom: 0;
+      width: 1px;
+      background-color: var(--seam-2);
+    }
+  }
+
+  .across > span::after {
+    display: none;
+  }
+
+  .downOnly {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 1.5rem;
+    padding-bottom: 0.5rem;
+
+    & > span {
+      flex: none;
+    }
+  }
+}

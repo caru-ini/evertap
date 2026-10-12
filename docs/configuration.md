@@ -1,0 +1,81 @@
+---
+title: Configuration
+---
+
+evertap needs no configuration file. `evertap setup` saves how evertap is reached in its data
+directory, and everything else has a default. Environment variables change the rest, or fix a
+setting so that setup cannot change it.
+
+## How settings are decided
+
+The mode, the address browsers use, and where the UI listens come from, in order:
+
+1. Their environment variable: `EVERTAP_MODE`, `EVERTAP_PUBLIC_URL`, `EVERTAP_LISTEN_HOST`.
+2. What `evertap setup` or Settings saved, in `evertap.db` in the data directory.
+3. The mode's default.
+
+While a variable is set, setup shows its value instead of asking, Settings shows the variable's
+name, and neither can change it. An empty value counts as unset, as a blank line in an environment
+file gives. Under systemd, set variables in `/etc/evertap/evertap.env`, and restart evertap after a
+change ([Settings for the service](install.md#settings-for-the-service)).
+
+The address of buckets reached from anywhere has no variable: give it in Settings → Change access,
+or with `evertap setup --s3-url`.
+
+## evertap serve
+
+| Variable                 | Default                  | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EVERTAP_MODE`           | What setup saved         | `local` for This computer only, `network` for Devices on your network or Behind your own proxy or tunnel (`EVERTAP_LISTEN_HOST` tells them apart), or `cloudflare` for the tunnel evertap runs ([Choose how evertap is reached](modes.md)). With none saved either, evertap listens on 127.0.0.1 alone.                                                                                                                                                                                           |
+| `EVERTAP_PUBLIC_URL`     | Depends on the mode      | The address browsers open evertap at, such as `https://evertap.example.com`, with no path. Sign-in links point there, and evertap answers to its hostname. Set `EVERTAP_MODE` with it, but not to `cloudflare`: the tunnel evertap runs has its own address, and evertap does not start with both.                                                                                                                                                                                                |
+| `EVERTAP_LISTEN_HOST`    | `127.0.0.1`              | The IP address the UI listens on: `127.0.0.1` behind a proxy on this machine, `0.0.0.0` for your home network, or Docker's bridge address behind a proxy run with Docker. `127.77.0.1` is the default in `local` mode.                                                                                                                                                                                                                                                                            |
+| `EVERTAP_PORT`           | `8080`                   | The UI's port, in every mode.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `EVERTAP_HOST`           | `evertap.local`          | This machine's name on your network. In `network` mode, evertap answers to it. The Doctor checks that it resolves when you set it or open evertap at it. evertap does not announce it.                                                                                                                                                                                                                                                                                                            |
+| `EVERTAP_DATA_DIR`       | `~/.local/share/evertap` | Where evertap keeps its records, settings, the services' configuration files, and its socket for the CLI on this machine ([Security](security.md#what-the-data-directory-holds)).                                                                                                                                                                                                                                                                                                                 |
+| `EVERTAP_DOCKER_SOCKET`  | Found on its own         | Docker's socket. Unset, evertap follows a `unix://` `DOCKER_HOST`, then takes the first that exists of `/var/run/docker.sock`, `~/.docker/run/docker.sock`, `~/.docker/desktop/docker.sock`, `~/.orbstack/run/docker.sock`, `~/.colima/default/docker.sock`, and `$XDG_RUNTIME_DIR/docker.sock`. evertap talks to Docker over a socket only.                                                                                                                                                      |
+| `EVERTAP_PREFIX`         | `evertap`                | What the names of evertap's Docker containers, volumes, and network start with. evertap never touches anything else. Changing it leaves the old ones unused, so set it once, before the first database.                                                                                                                                                                                                                                                                                           |
+| `EVERTAP_POSTGRES_PORT`  | `6432`                   | In `network` and `cloudflare` mode, where the PostgreSQL entry listens on 127.0.0.1 for `evertap connect`. Change it only when something else on the machine holds the port. Connection details stay on 5432.                                                                                                                                                                                                                                                                                     |
+| `EVERTAP_MYSQL_PORT`     | `3306`                   | The same, for MySQL.                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `EVERTAP_REDIS_PORT`     | `6379`                   | The same, for Redis.                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `EVERTAP_GARAGE_PORT`    | `3900`                   | The same, for buckets.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `EVERTAP_PUBLIC_S3_PORT` | `9900`                   | Where the entry for buckets reached from anywhere listens, once buckets have an address: beside the UI, or on `127.0.0.1` while the UI listens on every interface. Your proxy sends that address there ([Reverse proxies](proxies.md#buckets-reached-from-anywhere)), and so does the tunnel evertap creates, for `s3.<your domain>` ([Cloudflare Tunnel](cloudflare.md#let-evertap-create-the-tunnel)). evertap writes it into the tunnel's routes, so set the tunnel up again if you change it. |
+| `EVERTAP_DEMO`           | Off                      | `1` serves sample data from memory, starts nothing, and has no sign-in, for trying the UI. Changes are gone when it stops.                                                                                                                                                                                                                                                                                                                                                                        |
+| `EVERTAP_UPDATE_CHECK`   | On                       | `0` stops evertap from asking GitHub once a day whether a newer release is out ([What evertap connects to](security.md#what-evertap-connects-to)).                                                                                                                                                                                                                                                                                                                                                |
+
+In `local` mode, the entries always listen on `127.77.0.1` at the standard ports, which the
+`EVERTAP_*_PORT` variables do not move.
+
+The default address browsers use, without `EVERTAP_PUBLIC_URL` or a saved one:
+
+- `local`: `http://ev.internal:8080`
+- `network`, listening on every interface: `http://<this machine's address on your network>:8080`
+- `network`, listening on one address: `http://<that address>:8080`
+- `cloudflare`: the name you gave the tunnel evertap created, such as
+  `https://evertap.example.com`, which evertap saves
+
+## The CLI
+
+| Variable               | Default                           | What it does                                                                                                                                                                                         |
+| ---------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EVERTAP_API_KEY`      | None                              | An API key from Clients → New API key. The CLI uses it instead of `evertap login`, for CI and scripts ([Connect](connecting.md#ci-with-an-api-key)).                                                 |
+| `EVERTAP_URL`          | The address `evertap login` saved | The address evertap is opened at, used with `EVERTAP_API_KEY`.                                                                                                                                       |
+| `XDG_CONFIG_HOME`      | `~/.config`                       | `evertap login` saves the address and token in `evertap/config.json` under it, and `evertap skills install` records what it wrote in `evertap/skills.json`.                                          |
+| `NODE_EXTRA_CA_CERTS`  | None                              | A file of extra certificate authorities to trust, for a proxy whose certificate comes from your own authority.                                                                                       |
+| `CLOUDFLARE_API_TOKEN` | None                              | On the machine running evertap, an API token setup creates or removes the tunnel with, so you need not approve evertap in Cloudflare ([Cloudflare Tunnel](cloudflare.md)). evertap does not keep it. |
+
+The CLI finds evertap in this order:
+
+1. With `EVERTAP_API_KEY` set: `EVERTAP_URL`, or the address `evertap login` saved.
+2. On the machine running evertap: its socket in the data directory, which needs no sign-in. Set
+   the same `EVERTAP_DATA_DIR` as evertap if you changed it.
+3. The address and token `evertap login` saved.
+
+`evertap setup`, `open`, and `signin-link` use the socket alone. `evertap uninstall` also reads
+`EVERTAP_DATA_DIR`, `EVERTAP_PREFIX`, and `EVERTAP_DOCKER_SOCKET`, to find what to remove.
+
+## The install script
+
+| Variable              | Default          | What it does                                                                             |
+| --------------------- | ---------------- | ---------------------------------------------------------------------------------------- |
+| `EVERTAP_VERSION`     | The latest       | The release to install, such as `0.1.0`, or `develop` for the newest build of `develop`. |
+| `EVERTAP_INSTALL_DIR` | `/usr/local/bin` | Where to put the `evertap` binary.                                                       |

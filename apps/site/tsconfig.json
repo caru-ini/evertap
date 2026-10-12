@@ -1,0 +1,20 @@
+{
+  "extends": "@evertap/config/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "allowArbitraryExtensions": true,
+    // CSS module types are generated into .css-types/, mirroring the app's folders
+    "rootDirs": [".", "./.css-types"],
+    "types": ["vinext/types", "node"]
+  },
+  "include": [
+    "app",
+    "components",
+    "lib",
+    "vite.config.ts",
+    "cloudflare.config.ts",
+    "next.config.ts",
+    "vitest.config.ts"
+  ]
+}

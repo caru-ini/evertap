@@ -1,0 +1,4 @@
+{
+  "extends": "@evertap/config/tsconfig.base.json",
+  "files": []
+}

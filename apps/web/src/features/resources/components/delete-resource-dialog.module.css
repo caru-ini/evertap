@@ -1,0 +1,28 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.confirmLabel {
+  display: block;
+  line-height: 1.25rem;
+}
+
+.name {
+  overflow-wrap: anywhere;
+}
+
+.confirmInput {
+  height: 2.25rem;
+}
+
+.dialog {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+}
+
+.title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}

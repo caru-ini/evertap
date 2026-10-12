@@ -1,0 +1,197 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (width >= 40rem) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.change {
+  @media (width >= 40rem) {
+    margin-left: auto;
+  }
+}
+
+.intro,
+.sectionNote {
+  max-width: 65ch;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--print-2);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-inline: -0.5rem;
+}
+
+.band {
+  display: flex;
+  height: 2.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--panel-2);
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+
+  & svg {
+    width: 1rem;
+    height: 1rem;
+    color: var(--print-2);
+  }
+}
+
+.sectionNote {
+  padding: 0.5rem;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  min-height: 2.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  row-gap: 0.125rem;
+  padding: 0.5rem;
+
+  & + & {
+    border-top: 1px solid var(--border);
+  }
+
+  @media (width >= 40rem) {
+    grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+}
+
+.label {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: var(--text-sm--line-height);
+  font-weight: 500;
+}
+
+.engineIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.value {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.main {
+  overflow-wrap: anywhere;
+  font-size: 0.875rem;
+  line-height: var(--text-sm--line-height);
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.large {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+}
+
+.valueIcon {
+  display: inline-block;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-right: 0.5rem;
+  vertical-align: -0.1875rem;
+  color: var(--print-2);
+}
+
+.note {
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--print-3);
+}
+
+.lock {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.25rem;
+  vertical-align: -0.125rem;
+}
+
+.variable {
+  font-family: var(--mono);
+  color: var(--print-2);
+}
+
+.warning {
+  margin: 0.25rem 0.5rem 0.5rem;
+  max-width: 65ch;
+  border-left: 2px solid var(--amber);
+  padding-block: 0.25rem;
+  padding-left: 0.75rem;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--amber-print);
+}
+
+.buckets {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.bucketsNote {
+  max-width: 65ch;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--print-2);
+}
+
+.address {
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  color: var(--print);
+}

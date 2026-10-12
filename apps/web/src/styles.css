@@ -1,0 +1,26 @@
+@import "@evertap/ui/globals.css";
+
+[data-slot="sidebar"] {
+  --sidebar: var(--panel-2);
+  --sidebar-accent: var(--panel-3);
+}
+
+[data-slot="sidebar-gap"],
+[data-slot="sidebar-container"],
+[data-slot="sidebar-group-label"],
+[data-slot="sidebar-menu-button"] {
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-slot="sidebar"][data-mobile="true"] {
+  opacity: 1;
+  transition-property: translate;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-slot="sidebar"][data-mobile="true"][data-starting-style],
+[data-slot="sidebar"][data-mobile="true"][data-ending-style] {
+  translate: -100% 0;
+}

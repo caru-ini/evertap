@@ -1,0 +1,151 @@
+.header {
+  height: 3rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  padding-inline: 0.625rem;
+}
+
+/* Pushes Theme and the collapse button to the right. Not a sibling selector on the buttons:
+   an open menu inserts focus guards beside its trigger. */
+.brand {
+  margin-right: auto;
+
+  :global([data-collapsible="icon"]) & {
+    display: none;
+  }
+}
+
+/* The rail has room for the collapse button only. */
+.theme {
+  :global([data-collapsible="icon"]) & {
+    display: none;
+  }
+}
+
+.trigger {
+  flex-shrink: 0;
+  color: var(--print-3);
+
+  :global([data-collapsible="icon"]) & {
+    margin-left: auto;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--print);
+    }
+  }
+}
+
+.menu {
+  gap: 0.375rem;
+}
+
+/* Drawn as a field so it reads as the place to type; the rail keeps a plain icon. */
+.search {
+  border: 1px solid var(--seam-2);
+  background-color: var(--panel);
+  color: var(--print-3);
+
+  :global([data-collapsible="icon"]) & {
+    border-color: transparent;
+    background-color: transparent;
+  }
+
+  &:active {
+    background-color: var(--sidebar-accent);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--sidebar-accent);
+    }
+  }
+}
+
+.shortcut {
+  margin-left: auto;
+  font-size: 11px;
+
+  :global([data-collapsible="icon"]) & {
+    display: none;
+  }
+
+  @media (hover: none) {
+    display: none;
+  }
+}
+
+.page {
+  color: var(--print-2);
+}
+
+/* A colour set here beats the sidebar's own state colours, so they are restated. */
+.page,
+.search {
+  &[data-active],
+  &:active {
+    color: var(--sidebar-accent-foreground);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--sidebar-accent-foreground);
+    }
+  }
+}
+
+.engine {
+  @media (hover: hover) {
+    :global([data-slot="sidebar-menu-item"]):hover & {
+      background-color: var(--sidebar-accent);
+    }
+  }
+}
+
+/* The rail hides the label with a negative margin, leaving it over the row above. */
+.groupLabel {
+  color: var(--print-3);
+
+  :global([data-collapsible="icon"]) & {
+    pointer-events: none;
+  }
+}
+
+.create {
+  color: var(--print-3);
+
+  :global([data-slot="sidebar-menu-button"][data-active]) ~ & {
+    color: var(--sidebar-accent-foreground);
+  }
+
+  @media (hover: hover) {
+    :global([data-slot="sidebar-menu-button"]):hover ~ &,
+    &:hover {
+      color: var(--sidebar-accent-foreground);
+    }
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+}
+
+/* Amber, as a state that needs attention, so a security fix does not go unnoticed. */
+.update {
+  color: var(--amber-print);
+}
+
+.footer {
+  flex-shrink: 0;
+  gap: 0;
+  border-top: 1px solid var(--sidebar-border);
+  padding: 0;
+}
+
+.footerMenu {
+  gap: 0.375rem;
+  padding: 0.5rem;
+}

@@ -1,0 +1,105 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border);
+  padding-block: 0.75rem;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.joiner {
+  flex-shrink: 0;
+  width: 2.5rem;
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--print-3);
+}
+
+.column {
+  min-width: 8rem;
+  max-width: 12rem;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.operator {
+  width: 10rem;
+}
+
+.popup {
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.columnItem {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.value {
+  flex: 1;
+  min-width: 8rem;
+  height: 2.25rem;
+  border-color: var(--seam-2);
+  font-family: var(--mono);
+
+  &:focus-visible {
+    border-color: var(--ring);
+  }
+
+  @media (width >= 40rem) {
+    max-width: 16rem;
+  }
+
+  @media (width < 40rem) {
+    height: 2.75rem;
+  }
+}
+
+.remove {
+  color: var(--print-3);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--print);
+    }
+  }
+
+  @media (width < 40rem) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 3rem;
+}
+
+.quiet {
+  color: var(--print-2);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--foreground);
+    }
+  }
+
+  &[aria-expanded="true"] {
+    color: var(--foreground);
+  }
+}

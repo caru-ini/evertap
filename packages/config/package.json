@@ -1,0 +1,14 @@
+{
+  "name": "@evertap/config",
+  "version": "0.0.0",
+  "private": true,
+  "homepage": "https://github.com/caru-ini/evertap#readme",
+  "bugs": "https://github.com/caru-ini/evertap/issues",
+  "license": "Apache-2.0",
+  "author": "caru-ini (https://github.com/caru-ini)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caru-ini/evertap.git",
+    "directory": "packages/config"
+  }
+}

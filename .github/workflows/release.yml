@@ -1,0 +1,196 @@
+name: Release
+
+# A version tag (pushed by `pnpm release`) publishes that release: each binary is built and run on
+# its own platform, attached to a GitHub release whose notes are the version's CHANGELOG.md section,
+# and the container image follows. Every push to develop does the same for the develop channel: one
+# prerelease gets the new files and notes in place, and the :develop image is replaced each time.
+on:
+  push:
+    tags: ["v*"]
+    branches: [develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # A newer develop build updates the prerelease anyway; a version always finishes.
+  cancel-in-progress: ${{ github.ref_type == 'branch' }}
+
+jobs:
+  version:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      release: ${{ steps.version.outputs.release }}
+      image-tags: ${{ steps.version.outputs.image-tags }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The tags and every commit since the last one.
+          fetch-depth: 0
+      # No cache: a release must not build with tools another workflow left behind.
+      - if: github.ref_type == 'branch'
+        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        with:
+          version: 2026.9.18
+          cache: false
+      - if: github.ref_type == 'branch'
+        run: pnpm install --frozen-lockfile
+      - id: version
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            version="${GITHUB_REF_NAME#v}"
+            # pnpm release writes the version to package.json before it tags.
+            test "$version" = "$(node -p 'require("./apps/server/package.json").version')"
+            release="$GITHUB_REF_NAME"
+            case "$version" in
+              *-*) image_tags="$version" ;;
+              *) image_tags="$version latest" ;;
+            esac
+          else
+            # <next version>-dev.<commits since the last version>+<commit>, which sorts after the
+            # last version and before the next.
+            last="$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null || true)"
+            next="$(RUST_LOG=error node_modules/.bin/git-cliff --bumped-version)"
+            if [ "$next" = "$last" ]; then
+              next="$(echo "${last#v}" | awk -F. '{ print $1 "." $2 "." $3 + 1 }')"
+            fi
+            version="${next#v}-dev.$(git rev-list --count "${last:+$last..}HEAD")+$(git rev-parse --short HEAD)"
+            # Not named develop, which would clash with the branch in git.
+            release=develop-build
+            image_tags=develop
+          fi
+          {
+            echo "version=$version"
+            echo "release=$release"
+            echo "image-tags=$image_tags"
+          } >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: version
+    strategy:
+      matrix:
+        include:
+          - target: linux-x64
+            runner: ubuntu-24.04
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+          - target: darwin-x64
+            runner: macos-15-intel
+          - target: darwin-arm64
+            runner: macos-26
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # No cache: a release must not build with tools another workflow left behind.
+      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        with:
+          version: 2026.9.18
+          cache: false
+      - run: pnpm install --frozen-lockfile
+      # The binary alone: the site is deployed on its own.
+      - env:
+          EVERTAP_VERSION: ${{ needs.version.outputs.version }}
+        run: pnpm turbo run build --filter=server
+      # Recent macOS can refuse to run the binary with the signature Bun leaves on it. An ad-hoc
+      # signature needs no Apple account; Gatekeeper still rejects it, but checks quarantined files only.
+      - if: runner.os == 'macOS'
+        run: |
+          codesign --force --sign - dist/evertap
+          codesign --verify --strict dist/evertap
+      - env:
+          VERSION: ${{ needs.version.outputs.version }}
+        run: test "$(./dist/evertap --version)" = "$VERSION"
+      - env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          mkdir -p "release/evertap-$TARGET"
+          cp dist/evertap LICENSE "release/evertap-$TARGET/"
+          # The install script takes the unit from the same archive as the binary.
+          case "$TARGET" in
+            linux-*) cp contrib/systemd/evertap@.service "release/evertap-$TARGET/" ;;
+          esac
+          bun apps/server/scripts/third-party-notices.ts > "release/evertap-$TARGET/THIRD_PARTY_NOTICES.md"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: evertap-${{ matrix.target }}
+          path: release/
+          if-no-files-found: error
+
+  release:
+    needs: [version, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write # create the release
+      id-token: write # sign the attestation
+      attestations: write # store the attestation
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: build
+          merge-multiple: true
+      # Packed here so every archive comes from the same tar, owned by root. Artifacts drop the
+      # executable bit.
+      - run: |
+          mkdir release
+          for dir in build/evertap-*; do
+            chmod 755 "$dir/evertap"
+            tar -C build --owner=0 --group=0 --numeric-owner -czf "release/${dir#build/}.tar.gz" "${dir#build/}"
+          done
+          cp scripts/install.sh release/
+          cd release
+          sha256sum -- * > SHA256SUMS
+      # Attestations need a public repository on GitHub's Free, Pro, and Team plans.
+      - if: ${{ !github.event.repository.private }}
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-checksums: release/SHA256SUMS
+      - if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          # The version's section of CHANGELOG.md, without its heading.
+          awk -v heading="## [$VERSION]" 'index($0, heading) == 1 { found = 1; next } found && /^## \[/ { exit } found' CHANGELOG.md > notes.md
+          test -s notes.md
+          gh release create "$TAG" release/* --verify-tag --title "$TAG" --notes-file notes.md
+      # Updated in place: its tag stays where the first build put it, as a moved tag makes
+      # `git pull --tags` fail in every clone, and the version and notes name the commit instead.
+      - if: github.ref_type == 'branch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ needs.version.outputs.release }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          notes="The newest build of the develop branch, $VERSION, from commit $GITHUB_SHA. Install it with \`curl -fsSL https://evertap.dev/install.sh | EVERTAP_VERSION=develop sh\`."
+          if gh release view "$RELEASE" > /dev/null 2>&1; then
+            gh release upload "$RELEASE" release/* --clobber
+            gh release edit "$RELEASE" --title "develop $VERSION" --notes "$notes"
+          else
+            gh release create "$RELEASE" release/* --prerelease --target "$GITHUB_SHA" \
+              --title "develop $VERSION" --notes "$notes"
+          fi
+
+  image:
+    needs: [version, release]
+    permissions:
+      contents: read # download the release
+      packages: write # push the image
+      id-token: write # sign the attestation
+      attestations: write # store the attestation
+    # actionlint does not know the $/ form yet.
+    uses: ./.github/workflows/image.yml # zizmor: ignore[self-repository]
+    with:
+      release: ${{ needs.version.outputs.release }}
+      tags: ${{ needs.version.outputs.image-tags }}

@@ -1,0 +1,42 @@
+{
+  "name": "@evertap/ui",
+  "version": "0.0.0",
+  "private": true,
+  "homepage": "https://github.com/caru-ini/evertap#readme",
+  "bugs": "https://github.com/caru-ini/evertap/issues",
+  "license": "Apache-2.0",
+  "author": "caru-ini (https://github.com/caru-ini)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caru-ini/evertap.git",
+    "directory": "packages/ui"
+  },
+  "type": "module",
+  "exports": {
+    "./globals.css": "./src/styles/globals.css",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts"
+  },
+  "scripts": {
+    "check-types": "rm -rf .css-types && tcm -a -s -p '**/*.module.css' -o .css-types src && tsc --noEmit"
+  },
+  "dependencies": {
+    "@base-ui/react": "catalog:",
+    "@fontsource/figtree": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@phosphor-icons/react": "catalog:",
+    "cmdk": "^1.1.1",
+    "next-themes": "^0.4.6",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sonner": "^2.0.8"
+  },
+  "devDependencies": {
+    "@evertap/config": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typed-css-modules": "catalog:",
+    "typescript": "catalog:"
+  }
+}

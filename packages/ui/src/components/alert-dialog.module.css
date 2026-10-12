@@ -1,0 +1,160 @@
+@layer ui {
+  .overlay {
+    position: fixed;
+    inset: 0;
+    isolation: isolate;
+    z-index: 50;
+    background-color: rgb(0 0 0 / 0.1);
+    transition: opacity 100ms ease;
+
+    @supports (backdrop-filter: blur(0)) {
+      backdrop-filter: blur(4px);
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+      opacity: 0;
+    }
+  }
+
+  /* Zero specificity so a caller's module class (e.g. CommandDialog) wins whatever the CSS order. */
+  :where(.content) {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 50;
+    display: grid;
+    width: 100%;
+    max-width: 20rem;
+    translate: -50% -50%;
+    gap: 1rem;
+    border-radius: var(--radius-xl);
+    background-color: var(--popover);
+    padding: 1rem;
+    color: var(--popover-foreground);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent);
+    outline: none;
+    transition:
+      opacity 100ms ease,
+      scale 100ms ease;
+
+    @media (width >= 40rem) {
+      &[data-size="default"] {
+        max-width: 24rem;
+      }
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+      opacity: 0;
+      scale: 0.95;
+    }
+  }
+
+  .header {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    place-items: center;
+    gap: 0.375rem;
+    text-align: center;
+
+    &:has([data-slot="alert-dialog-media"]) {
+      grid-template-rows: auto auto 1fr;
+      column-gap: 1rem;
+    }
+
+    @media (width >= 40rem) {
+      :global([data-slot="alert-dialog-content"][data-size="default"]) & {
+        place-items: start;
+        text-align: left;
+
+        &:has([data-slot="alert-dialog-media"]) {
+          grid-template-rows: auto 1fr;
+        }
+      }
+    }
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    margin: 0 -1rem -1rem;
+    border-top: 1px solid var(--border);
+    border-bottom-right-radius: var(--radius-xl);
+    border-bottom-left-radius: var(--radius-xl);
+    background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+    padding: 1rem;
+
+    @media (width >= 40rem) {
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+
+    :global([data-slot="alert-dialog-content"][data-size="sm"]) & {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .media {
+    display: inline-flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius-md);
+    background-color: var(--muted);
+
+    & > svg:not([class*="size-"]) {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    @media (width >= 40rem) {
+      :global([data-slot="alert-dialog-content"][data-size="default"]) & {
+        grid-row: span 2 / span 2;
+      }
+    }
+  }
+
+  .title {
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 500;
+
+    @media (width >= 40rem) {
+      :global(
+          [data-slot="alert-dialog-content"][data-size="default"]:has(
+              [data-slot="alert-dialog-media"]
+            )
+        )
+        & {
+        grid-column-start: 2;
+      }
+    }
+  }
+
+  .description {
+    font-size: 0.875rem;
+    line-height: var(--text-sm--line-height);
+    text-wrap: balance;
+    color: var(--muted-foreground);
+
+    @media (width >= 48rem) {
+      text-wrap: pretty;
+    }
+
+    & > a {
+      text-decoration-line: underline;
+      text-underline-offset: 3px;
+
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
+      }
+    }
+  }
+}

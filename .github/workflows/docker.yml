@@ -1,0 +1,39 @@
+name: Docker tests
+
+# The drivers against real containers, when a change affects them (turbo --affected, from the
+# inputs of server#test:docker). Nightly, everything on the newest database images, so an upstream
+# patch that breaks a driver shows up before evertap pins it.
+on:
+  push:
+    branches: [develop]
+  pull_request:
+  schedule:
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  drivers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # --affected compares with the commit before the push or with the pull request's base.
+          fetch-depth: 0
+      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        with:
+          version: 2026.9.18
+      - run: pnpm install --frozen-lockfile
+      - if: github.event_name == 'schedule'
+        run: bun apps/server/scripts/pin-images.ts
+      - env:
+          AFFECTED: ${{ (github.event_name == 'push' || github.event_name == 'pull_request') && 'true' || '' }}
+        run: pnpm turbo run test:docker ${AFFECTED:+--affected}

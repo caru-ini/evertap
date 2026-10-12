@@ -1,0 +1,34 @@
+.switch {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.choice {
+  position: relative;
+  cursor: pointer;
+}
+
+.option {
+  transition-property: none;
+
+  input:focus-visible + & {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--ring);
+  }
+
+  @media (width < 40rem) {
+    height: 2.75rem;
+    min-width: 2.75rem;
+  }
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.unselected {
+  color: var(--print-2);
+}

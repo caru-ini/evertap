@@ -1,0 +1,42 @@
+{
+  "name": "evertap-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Databases and object storage handed out from one box on your home server or VPS",
+  "homepage": "https://github.com/caru-ini/evertap#readme",
+  "bugs": "https://github.com/caru-ini/evertap/issues",
+  "license": "Apache-2.0",
+  "author": "caru-ini (https://github.com/caru-ini)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caru-ini/evertap.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "test": "turbo run test",
+    "check": "oxlint --fix && oxfmt --write",
+    "check:ci": "oxlint && oxfmt --check",
+    "release": "bun apps/server/scripts/release.ts",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@commitlint/types": "^21.2.0",
+    "@types/node": "catalog:",
+    "git-cliff": "2.14.2",
+    "lefthook": "^2.1.14",
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.83.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "turbo": "^2.11.6",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@12.4.1"
+}

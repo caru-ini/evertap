@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- The sidebar draws this as an <img>; fetched early so it doesn't pop in after the first paint. -->
+    <link rel="preload" href="/brands/garage.svg" as="image" type="image/svg+xml" />
+    <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d1012" media="(prefers-color-scheme: dark)" />
+    <!-- Applies the saved theme before the bundle loads, so a dark page never paints light first. -->
+    <script>
+      // Read by zod as it loads: otherwise it probes `new Function`, which the CSP reports on every page.
+      globalThis.__zod_globalConfig = { jitless: true };
+      try {
+        const theme = localStorage.getItem("theme");
+        const dark =
+          theme === "dark" ||
+          (theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+      } catch {}
+    </script>
+    <!-- Fixes the cascade layer order before any stylesheet loads; CSS modules can load before globals.css. -->
+    <style>
+      @layer reset, base, ui;
+    </style>
+    <!-- Paints the theme's background and a spinner until the app renders; mirrors --panel and --print-3 in globals.css. -->
+    <style>
+      html {
+        background-color: oklch(98.5% 0.003 250);
+      }
+      html.dark {
+        background-color: oklch(17% 0.006 250);
+      }
+      .boot {
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid oklch(50% 0.012 250 / 0.25);
+        border-top-color: oklch(50% 0.012 250);
+        border-radius: 50%;
+        opacity: 0;
+        animation:
+          boot-in 0.2s 0.2s forwards,
+          boot-spin 0.8s linear infinite;
+      }
+      html.dark .boot {
+        border-color: oklch(67% 0.01 250 / 0.25);
+        border-top-color: oklch(67% 0.01 250);
+      }
+      @keyframes boot-in {
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <title>evertap</title>
+  </head>
+  <body>
+    <div id="app"><div class="boot" role="status" aria-label="Loading"></div></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

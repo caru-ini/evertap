@@ -1,0 +1,215 @@
+.columns {
+  display: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0 0.5rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--print-3);
+}
+
+.sizeHead {
+  text-align: right;
+}
+
+.row {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 3.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--panel-2);
+    }
+  }
+
+  &:has(a:focus-visible) {
+    background-color: var(--panel-2);
+  }
+}
+
+/* Container widths, not viewport widths: the sidebar takes 256px away when it is open.
+   The copy label only fits from 672px; below that the action column holds two icon buttons. */
+.columns,
+.row {
+  @container (width >= 36rem) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 4.5rem 7.5rem 4.25rem;
+    column-gap: 1rem;
+  }
+
+  @container (width >= 42rem) {
+    grid-template-columns: minmax(0, 1fr) 4.5rem 7.5rem 8.75rem;
+  }
+}
+
+.main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.nameLine {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  line-height: 1.5rem;
+  font-weight: 500;
+}
+
+.link {
+  border-radius: var(--radius-sm);
+  outline-style: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+}
+
+.chipsWide,
+.chipsStacked {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chipsWide {
+  display: none;
+
+  @container (width >= 36rem) {
+    display: flex;
+  }
+}
+
+.chipsStacked {
+  display: flex;
+
+  @container (width >= 36rem) {
+    display: none;
+  }
+}
+
+.meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--print-2);
+}
+
+.stackedMeta,
+.description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stackedMeta {
+  font-variant-numeric: tabular-nums;
+  color: var(--print-3);
+
+  @container (width >= 36rem) {
+    display: none;
+  }
+}
+
+.description {
+  display: none;
+  font-size: 13px;
+
+  @container (width >= 36rem) {
+    display: block;
+  }
+}
+
+.size,
+.lastUsed {
+  display: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--print-2);
+
+  @container (width >= 36rem) {
+    display: block;
+  }
+}
+
+.size {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+}
+
+.lastUsed {
+  font-size: 13px;
+  line-height: 1.25rem;
+}
+
+/* Above the name link's row-wide hit area. */
+.actions {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+/* Stacked rows leave copying to the ⋯ menu. */
+.copy {
+  display: none;
+  width: 2rem;
+  padding-inline: 0;
+  color: var(--print-2);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--foreground);
+    }
+  }
+
+  @media (width < 40rem) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  @container (width >= 36rem) {
+    display: inline-flex;
+  }
+
+  @container (width >= 42rem) {
+    width: 6.5rem;
+    justify-content: flex-start;
+    padding-inline: 0.625rem;
+  }
+}
+
+.copyLabel {
+  display: none;
+
+  @container (width >= 42rem) {
+    display: inline;
+  }
+}

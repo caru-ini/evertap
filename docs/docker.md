@@ -1,0 +1,138 @@
+---
+title: Run evertap in Docker
+---
+
+evertap is one binary, and it also comes as a container image, `ghcr.io/caru-ini/evertap`, for
+Linux on amd64 and arm64. Environment variables set everything, so it starts without asking
+anything.
+
+evertap drives the Docker it runs on, so its container needs three things most containers do not:
+Docker's socket, the data directory at the same path as on the host, and the host's network.
+
+## What you need
+
+Linux with Docker Engine. Elsewhere, run the binary instead:
+
+- Docker Desktop on macOS and Windows does not let a container listen on the computer's own
+  addresses, which evertap needs.
+- Rootless Docker before version 29.5 keeps host networking inside its own namespace instead of
+  the machine's.
+
+## Compose file
+
+```yaml
+services:
+  evertap:
+    image: ghcr.io/caru-ini/evertap:latest
+    container_name: evertap
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      EVERTAP_MODE: network
+      EVERTAP_LISTEN_HOST: 0.0.0.0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/evertap:/var/lib/evertap
+```
+
+This one is for your home network over plain HTTP. For a reverse proxy or a Cloudflare Tunnel, see
+[Choose how it is reached](#choose-how-it-is-reached).
+
+Start it, then sign in the first browser:
+
+```sh
+docker compose up -d
+docker compose logs evertap               # the address browsers open
+docker exec evertap evertap signin-link   # a one-time sign-in link and QR code
+```
+
+Other commands run on this machine the same way, such as `docker exec evertap evertap doctor`. They
+reach evertap through its socket in the data directory and need no sign-in. Your laptop pairs and
+connects as with any evertap: `evertap login http://<this machine>:8080`, then `evertap connect`.
+
+## What each line is for
+
+### The Docker socket
+
+`/var/run/docker.sock` lets evertap create databases and buckets with the host's Docker. Whoever
+controls that socket controls the host as root, so trust this container as you would a member of
+the `docker` group. If you mount the socket at another path inside the container, set
+`EVERTAP_DOCKER_SOCKET` to it.
+
+### The data directory, at the same path
+
+evertap writes the configuration of ProxySQL and Garage into its data directory and
+mounts those files into their containers. Docker on the host looks up those paths on the host, not
+inside evertap's container, so the data directory must have the same path on both sides. With
+`./data:/var/lib/evertap`, evertap writes the files to `./data` while Docker looks for them in
+`/var/lib/evertap`, and the databases do not start.
+
+The image keeps its data in `/var/lib/evertap`. To keep it elsewhere, such as in `/srv/evertap`,
+add `EVERTAP_DATA_DIR: /srv/evertap` under `environment:` and mount `/srv/evertap:/srv/evertap`
+in place of `/var/lib/evertap:/var/lib/evertap`.
+
+The directory holds every database's password and the keys evertap keeps for its services. evertap
+lets only its owner read it; treat backups of it like the databases themselves.
+
+### The host's network
+
+The UI, the relay that `evertap connect` uses, and the entry for each database and bucket all run
+inside the evertap process, and the databases are published on the host's 127.0.0.1 only.
+With `network_mode: host`, evertap reaches them there, and its own listeners are ordinary sockets
+on the host, which your firewall filters like any other program's.
+
+Do not swap host networking for `ports:`. Docker's firewall rules for a published port come before
+ufw's, so a port published on every address stays open to the network even when ufw blocks it.
+
+On the host's network, evertap also sees the machine's own addresses. It uses them for the address
+browsers open on your home network, and to warn when the UI listens where the internet reaches it.
+
+## Choose how it is reached
+
+Set these under `environment:`. Each wins over anything saved, so evertap does not ask.
+
+| Where you open evertap from                                                   | Set                                                                                                           |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Devices on your network, over plain HTTP                                      | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 0.0.0.0`                                                       |
+| Behind your own proxy or tunnel on this machine, such as Caddy or cloudflared | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 127.0.0.1`, `EVERTAP_PUBLIC_URL: https://evertap.example.com`  |
+| Behind your own proxy run with Docker                                         | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 172.17.0.1`, `EVERTAP_PUBLIC_URL: https://evertap.example.com` |
+| Anywhere, through Cloudflare                                                  | `EVERTAP_MODE: cloudflare`, then `docker exec -it evertap evertap setup` ([Cloudflare Tunnel](cloudflare.md)) |
+
+`EVERTAP_PUBLIC_URL` does not go with `EVERTAP_MODE: cloudflare`: the tunnel evertap runs has its own
+address, and evertap does not start with both. A tunnel you run yourself is a proxy on this machine.
+
+A proxy or `cloudflared` on this machine reaches evertap at `http://127.0.0.1:8080`. One run with
+Docker reaches it on Docker's bridge: set `EVERTAP_LISTEN_HOST` to the bridge's address
+(`ip -4 addr show docker0`, usually `172.17.0.1`) and point the proxy at that address and port 8080.
+Behind a proxy, `docker exec -it evertap evertap setup` prints a Caddy and an nginx configuration
+and checks that your address reaches evertap.
+
+This computer only (`local`) is for the computer you develop on. Its setup changes that computer's
+hosts file with sudo, which the container cannot do, so run the binary for it.
+
+## Update
+
+When a newer release is out, the UI's sidebar, the Doctor, and `evertap doctor` say so. Then run:
+
+```sh
+docker compose pull
+docker compose up -d
+```
+
+`latest` is the newest release. To update on your own schedule, use a version tag such as
+`ghcr.io/caru-ini/evertap:0.1.0` and change it when you update. When the new evertap starts, it
+replaces the containers whose image or settings changed and keeps their data.
+
+## Uninstall
+
+This deletes every database and bucket and their data:
+
+```sh
+docker compose down
+docker compose run --rm evertap uninstall
+sudo rmdir /var/lib/evertap
+```
+
+`uninstall` lists what it removes and asks you to confirm. It empties the data directory but
+cannot remove it while it is mounted, hence the `rmdir`. Then remove the image with
+`docker image rm ghcr.io/caru-ini/evertap:latest`.

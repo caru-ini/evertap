@@ -1,0 +1,77 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  // Otherwise turbo appends its own block to AGENTS.md whenever a coding agent runs it.
+  "agentGuidance": false,
+  "globalDependencies": ["mise.toml"],
+  "futureFlags": {
+    "affectedUsingTaskInputs": true,
+    "githubActionsRemoteBaseRefFallback": true,
+  },
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+    },
+    // The binary goes to the repository's dist/, outside the package, so a cache hit would skip it.
+    "server#build": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "env": ["EVERTAP_VERSION"],
+    },
+    "site#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/docs/**", "$TURBO_ROOT$/skills/**"],
+      "outputs": ["dist/**", ".cloudflare/output/**"],
+    },
+    "site#deploy": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/docs/**",
+        "$TURBO_ROOT$/skills/**",
+        "$TURBO_ROOT$/.github/workflows/site.yml",
+      ],
+      "passThroughEnv": ["DOTENV_PRIVATE_KEY_PRODUCTION"],
+    },
+    "site#test": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/skills/**"],
+    },
+    "server#test": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/skills/**"],
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["EVERTAP_*"],
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"],
+    },
+    // These also generate the CSS Module types (and web the route tree), so a cache hit has to restore them.
+    "web#check-types": {
+      "dependsOn": ["^check-types"],
+      "outputs": [".css-types/**", "src/routeTree.gen.ts"],
+    },
+    "@evertap/ui#check-types": {
+      "dependsOn": ["^check-types"],
+      "outputs": [".css-types/**"],
+    },
+    "site#check-types": {
+      "dependsOn": ["^check-types"],
+      "outputs": [".css-types/**"],
+    },
+    "test": {},
+    "server#test:docker": {
+      "cache": false,
+      "inputs": [
+        "src/live/**",
+        "src/**/*.docker.test.ts",
+        "package.json",
+        "$TURBO_ROOT$/packages/api/src/rules.ts",
+        "$TURBO_ROOT$/.github/workflows/docker.yml",
+      ],
+    },
+  },
+}

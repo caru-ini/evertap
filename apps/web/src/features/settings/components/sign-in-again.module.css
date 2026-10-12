@@ -1,0 +1,16 @@
+.warning {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-left: 2px solid var(--amber);
+  padding-block: 0.25rem;
+  padding-left: 0.75rem;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--amber-print);
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--mono);
+}

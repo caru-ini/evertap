@@ -1,0 +1,11 @@
+.title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.dates {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--print-3);
+  font-variant-numeric: tabular-nums;
+}

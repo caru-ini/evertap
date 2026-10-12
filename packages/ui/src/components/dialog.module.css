@@ -1,0 +1,117 @@
+@layer ui {
+  .overlay {
+    position: fixed;
+    inset: 0;
+    isolation: isolate;
+    z-index: 50;
+    background-color: rgb(0 0 0 / 0.1);
+    transition: opacity 100ms ease;
+
+    @supports (backdrop-filter: blur(0)) {
+      backdrop-filter: blur(4px);
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+      opacity: 0;
+    }
+  }
+
+  /* Zero specificity so a caller's module class (e.g. CommandDialog) wins whatever the CSS order. */
+  :where(.content) {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 50;
+    display: grid;
+    width: 100%;
+    max-width: calc(100% - 2rem);
+    translate: -50% -50%;
+    gap: 1rem;
+    border-radius: var(--radius-xl);
+    background-color: var(--popover);
+    padding: 1rem;
+    font-size: 0.875rem;
+    line-height: var(--text-sm--line-height);
+    color: var(--popover-foreground);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent);
+    outline: none;
+    transition:
+      opacity 100ms ease,
+      scale 100ms ease;
+
+    @media (width >= 40rem) {
+      max-width: 24rem;
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+      opacity: 0;
+      scale: 0.95;
+    }
+  }
+
+  .close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    margin: 0 -1rem -1rem;
+    border-top: 1px solid var(--border);
+    border-bottom-right-radius: var(--radius-xl);
+    border-bottom-left-radius: var(--radius-xl);
+    background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+    padding: 1rem;
+
+    @media (width >= 40rem) {
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+  }
+
+  .title {
+    font-size: 1rem;
+    line-height: 1;
+    font-weight: 500;
+  }
+
+  .description {
+    font-size: 0.875rem;
+    line-height: var(--text-sm--line-height);
+    color: var(--muted-foreground);
+
+    & > a {
+      text-decoration-line: underline;
+      text-underline-offset: 3px;
+
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
+      }
+    }
+  }
+}

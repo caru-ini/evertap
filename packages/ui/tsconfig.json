@@ -1,0 +1,14 @@
+{
+  "extends": "@evertap/config/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "allowArbitraryExtensions": true,
+    // CSS module types are generated into .css-types/, mirroring src/
+    "rootDirs": ["./src", "./.css-types"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "paths": {
+      "@evertap/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}

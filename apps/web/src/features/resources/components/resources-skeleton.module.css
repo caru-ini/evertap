@@ -1,0 +1,59 @@
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (width >= 40rem) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.title {
+  height: 1.75rem;
+  width: 8rem;
+}
+
+.button {
+  height: 2.25rem;
+  width: 100%;
+
+  @media (width >= 40rem) {
+    margin-left: auto;
+    width: 10rem;
+  }
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+
+  & > :not(:last-child) {
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+.row {
+  display: flex;
+  height: 3.75rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+.name {
+  height: 1.25rem;
+  width: 9rem;
+}
+
+.meta {
+  margin-left: auto;
+  height: 1rem;
+  width: 10rem;
+}

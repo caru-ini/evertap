@@ -1,0 +1,49 @@
+# git-cliff (https://git-cliff.org): the next version and its CHANGELOG.md section, from the
+# conventional commits since the last release. `pnpm release` runs it.
+
+[changelog]
+# Matches the top of CHANGELOG.md, so a new section goes in below it.
+header = """
+# Changelog
+
+Notable changes to evertap are listed here, and versions follow
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html). After 0.1.0,
+[git-cliff](https://git-cliff.org) writes each release's section from the subjects of its
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+"""
+# What it leaves after the header starts with a blank line, so the section ends without one.
+body = """
+{%- set number = version | trim_start_matches(pat="v") -%}
+## [{{ number }}](https://github.com/caru-ini/evertap/compare/{{ previous.version }}...{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim }}
+{% for commit in commits %}
+- {% if commit.scope %}_({{ commit.scope }})_ {% endif %}{% if commit.breaking %}[**breaking**] {% endif %}{{ commit.message | upper_first }}
+{%- endfor %}
+{% endfor %}"""
+trim = false
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+# Only what a parser below names goes in, so docs, chore, ci, test, refactor, style, and build
+# commits are left out and do not raise the version.
+filter_commits = true
+# The develop prerelease has a tag of its own, which is not a release.
+tag_pattern = "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+# Groups are ordered by the comment.
+commit_parsers = [
+  # evertap.dev is deployed from develop on its own and is not part of a release.
+  { field = "scope", pattern = "^site$", skip = true },
+  { message = "^feat", group = "<!-- 0 -->Features" },
+  { message = "^fix", group = "<!-- 1 -->Bug Fixes" },
+  { message = "^perf", group = "<!-- 2 -->Performance" },
+  # A breaking change of any other type, such as refactor!.
+  { field = "breaking", pattern = "true", group = "<!-- 3 -->Other Changes" },
+]
+
+[bump]
+# Until 1.0: a feature or a breaking change raises the minor version, a fix the patch version.
+features_always_bump_minor = true
+breaking_always_bump_major = false
+initial_tag = "v0.1.0"

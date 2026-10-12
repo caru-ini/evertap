@@ -1,0 +1,259 @@
+.sort {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  overflow: hidden;
+  padding: 0.375rem 0.75rem;
+  text-align: left;
+  outline: none;
+
+  & > * {
+    max-width: 20rem;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--panel-3);
+    }
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--ring);
+  }
+}
+
+.sortAuto {
+  min-width: 6rem;
+}
+
+.sort.sortFixed > * {
+  max-width: 100%;
+}
+
+.columnName {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  font-weight: 500;
+  color: var(--print);
+}
+
+.keyIcon,
+.sortIcon {
+  flex-shrink: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.keyIcon {
+  color: var(--print-3);
+}
+
+.clip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.columnType {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--print-3);
+}
+
+.columnTip {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  font-family: var(--mono);
+}
+
+.columnTipName {
+  font-weight: 500;
+}
+
+.editor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  width: 100%;
+  min-width: 18rem;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-radius: var(--radius-md);
+  background-color: var(--panel);
+  padding: 0.25rem;
+  box-shadow: 0 0 0 1px var(--seam-2);
+}
+
+.editorText {
+  field-sizing: content;
+  width: 100%;
+  min-height: 1.75rem;
+  max-height: 10rem;
+  resize: none;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  padding: 0.25rem 0.5rem;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.25rem;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+}
+
+.editorFoot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 0.25rem;
+}
+
+.editorHint {
+  margin-right: auto;
+  font-size: 11px;
+  line-height: 1rem;
+  color: var(--print-3);
+}
+
+.quiet {
+  color: var(--print-2);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--foreground);
+    }
+  }
+
+  &[aria-expanded="true"] {
+    color: var(--foreground);
+  }
+}
+
+.setNull {
+  font-family: var(--mono);
+}
+
+.rowUndo {
+  margin-inline: auto;
+}
+
+.busy {
+  opacity: 0.6;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.tableAuto {
+  width: max-content;
+}
+
+.tableFixed {
+  table-layout: fixed;
+}
+
+.checkHead,
+.checkCell {
+  width: 2.5rem;
+  padding-inline: 0.75rem;
+  text-align: center;
+}
+
+.checkHead {
+  vertical-align: middle;
+}
+
+.columnHead {
+  padding: 0;
+}
+
+.checkbox {
+  margin-inline: auto;
+}
+
+.resize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  width: 0.375rem;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--seam-2);
+    }
+  }
+
+  &:focus-visible {
+    background-color: var(--ring);
+  }
+}
+
+.row {
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--panel-2);
+    }
+  }
+}
+
+.selectedRow {
+  background-color: var(--panel-2);
+}
+
+.deletedRow {
+  color: var(--print-3);
+  text-decoration-line: line-through;
+}
+
+.checkCell,
+.dataCell {
+  outline: none;
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px var(--ring);
+  }
+}
+
+.dataCell {
+  position: relative;
+}
+
+.number {
+  text-align: right;
+}
+
+.editable {
+  cursor: text;
+}
+
+.staged {
+  background-color: var(--amber-panel);
+}
+
+/* The column's width, not the value's 320px cap, decides where text is cut. */
+.dataCell.fixedCell > * {
+  max-width: none;
+}

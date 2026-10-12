@@ -1,0 +1,131 @@
+.console {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sql {
+  max-height: 40dvh;
+  min-height: 8rem;
+  border-color: var(--seam-2);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.25rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.runKey {
+  background-color: transparent;
+  font-size: 11px;
+  color: currentColor;
+  opacity: 0.7;
+
+  @media (hover: none) {
+    display: none;
+  }
+}
+
+.allowWrites {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 13px;
+
+  @media (width < 40rem) {
+    height: 2.75rem;
+  }
+}
+
+.hint,
+.truncated,
+.empty {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+
+.hint {
+  flex-basis: 100%;
+  color: var(--print-3);
+}
+
+.hint.writing,
+.truncated {
+  color: var(--amber-print);
+}
+
+.refused {
+  border-left: 2px solid var(--amber);
+  padding-block: 0.25rem;
+  padding-left: 0.75rem;
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--amber-print);
+}
+
+.failure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-left: 2px solid var(--fault);
+  padding-block: 0.25rem;
+  padding-left: 0.75rem;
+}
+
+.failureLead,
+.summary {
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--print-3);
+}
+
+.failureMessage {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.25rem;
+  white-space: pre-wrap;
+  color: var(--fault);
+}
+
+.empty {
+  color: var(--print-3);
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summary {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.table {
+  width: max-content;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Two classes, so it beats the shared grid head's weight whatever the CSS order. */
+.table .column {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--print);
+}

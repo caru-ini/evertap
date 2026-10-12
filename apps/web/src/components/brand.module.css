@@ -1,0 +1,10 @@
+.brand {
+  display: flex;
+  min-width: 0;
+  border-radius: var(--radius-md);
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+}

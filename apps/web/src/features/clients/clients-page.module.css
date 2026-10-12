@@ -1,0 +1,319 @@
+.page {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (width >= 40rem) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.pageActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  @media (width >= 40rem) {
+    flex-direction: row;
+    margin-left: auto;
+  }
+}
+
+.intro {
+  max-width: 65ch;
+}
+
+.intro,
+.empty,
+.lastUsed {
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--print-2);
+}
+
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  @media (width >= 40rem) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.sort {
+  flex-shrink: 0;
+
+  @media (width >= 40rem) {
+    margin-left: auto;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin-inline: -0.5rem;
+}
+
+.columnHeads {
+  display: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0 0.5rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--print-3);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.group + .group {
+  margin-top: 1.5rem;
+}
+
+.band {
+  display: flex;
+  height: 2.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--panel-2);
+  padding-right: 0.125rem;
+}
+
+.bandIcon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--print-2);
+}
+
+.count {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--print-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Rows, their empty note, and Show all fold together. The space under the band sits inside the
+   panel, so folding ends at the band instead of jumping by that space. */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.25rem;
+}
+
+.bandAction {
+  color: var(--print-3);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--panel-3);
+      color: var(--foreground);
+    }
+  }
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+
+  &:focus-within {
+    background-color: var(--panel-2);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--panel-2);
+    }
+  }
+}
+
+.row + .row {
+  border-top: 1px solid var(--border);
+}
+
+/* Container widths, not viewport widths: the sidebar takes 256px away when it is open. */
+.columnHeads,
+.row {
+  @container (width >= 36rem) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 8.75rem 6.5rem 2rem;
+    align-items: center;
+    column-gap: 1rem;
+  }
+
+  @container (width >= 48rem) {
+    grid-template-columns: minmax(0, 1fr) 8.75rem 8.5rem 6.5rem 2rem;
+  }
+}
+
+.nameCell {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.name,
+.summary,
+.ip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  font-size: 15px;
+  line-height: 1.5rem;
+  font-weight: 500;
+}
+
+.summary {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--print-3);
+  font-variant-numeric: tabular-nums;
+
+  @container (width >= 36rem) {
+    display: none;
+  }
+}
+
+.lastUsed,
+.added {
+  display: none;
+  font-variant-numeric: tabular-nums;
+
+  @container (width >= 36rem) {
+    display: block;
+  }
+}
+
+.ip,
+.added {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--print-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.ip,
+.ipHead {
+  display: none;
+
+  @container (width >= 48rem) {
+    display: block;
+  }
+}
+
+.rowActions {
+  flex-shrink: 0;
+  justify-self: end;
+  color: var(--print-3);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--print);
+    }
+  }
+
+  @media (width < 40rem) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  /* A Revoke on every row shouts; the row's pointer or focus brings the menu out. */
+  @media (width >= 48rem) and (hover: hover) {
+    opacity: 0;
+
+    .row:hover &,
+    .row:focus-within &,
+    &[data-popup-open] {
+      opacity: 1;
+    }
+  }
+}
+
+.menu {
+  min-width: 10rem;
+}
+
+.empty {
+  padding: 0.75rem 0.5rem;
+}
+
+.showAll {
+  height: 2.5rem;
+  justify-content: flex-start;
+  border-radius: 0;
+  padding-inline: 0.5rem;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--print-2);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--foreground);
+    }
+  }
+
+  @media (width < 40rem) {
+    height: 2.75rem;
+  }
+}
+
+.caret {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.current {
+  margin-left: 0.5rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--panel-3);
+  padding: 0.125rem 0.375rem;
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--print-2);
+  vertical-align: 1px;
+}

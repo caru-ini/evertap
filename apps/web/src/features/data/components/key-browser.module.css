@@ -1,0 +1,207 @@
+.browser {
+  container-type: inline-size;
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  @media (width >= 40rem) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.search {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0%;
+  gap: 0.5rem;
+}
+
+.pattern {
+  min-width: 0;
+
+  @media (width >= 40rem) {
+    max-width: 24rem;
+  }
+}
+
+.patternInput,
+.wildcard {
+  font-family: var(--mono);
+}
+
+.newKey {
+  @media (width >= 40rem) {
+    margin-left: auto;
+  }
+}
+
+.help {
+  margin-top: -0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--print-3);
+}
+
+.split {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+
+  @container (width >= 48rem) {
+    display: grid;
+    grid-template-columns: 20rem minmax(0, 1fr);
+  }
+}
+
+.list {
+  display: flex;
+  max-height: 20rem;
+  min-width: 0;
+  flex-direction: column;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--border);
+  padding-block: 0.75rem;
+
+  @container (width >= 48rem) {
+    max-height: 75dvh;
+    border-right: 1px solid var(--border);
+    border-bottom-width: 0;
+    padding-right: 0.75rem;
+  }
+}
+
+.skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.skeletonKey {
+  width: 10rem;
+  height: 1rem;
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.5rem 0.25rem;
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--print-3);
+}
+
+.countValue {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.countSpinner {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.keys {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.key {
+  display: flex;
+  min-height: 2rem;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-md);
+  padding: 0.25rem 0.5rem;
+  font-size: 13px;
+  color: var(--print-2);
+  outline: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--panel-2);
+      color: var(--print);
+    }
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+
+  &[aria-current="page"] {
+    background-color: var(--panel-3);
+    font-weight: 500;
+    color: var(--print);
+  }
+
+  @media (width < 40rem) {
+    min-height: 2.75rem;
+  }
+}
+
+.keyName {
+  min-width: 0;
+  flex: 1 1 0%;
+  overflow: hidden;
+  font-family: var(--mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.keyType {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--print-3);
+}
+
+.empty {
+  padding-inline: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--print-3);
+}
+
+.loadMore {
+  margin-top: 0.25rem;
+  height: 2.5rem;
+  justify-content: flex-start;
+  border-radius: 0;
+  padding-inline: 0.5rem;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--print-2);
+
+  @media (width < 40rem) {
+    height: 2.75rem;
+  }
+}
+
+.detail {
+  min-width: 0;
+  scroll-margin-top: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+
+  @container (width >= 48rem) {
+    padding-left: 1.5rem;
+  }
+}
+
+.placeholder {
+  font-size: 13px;
+  line-height: 1.25rem;
+  color: var(--print-2);
+}

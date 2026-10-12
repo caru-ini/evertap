@@ -1,0 +1,166 @@
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-block: 0.5rem;
+
+  @media (width >= 40rem) {
+    flex-direction: row;
+    gap: 1rem;
+    padding-block: 0.375rem;
+  }
+}
+
+.detailLabel {
+  width: 8rem;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--print-3);
+}
+
+.detailValue {
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+
+  & > :not(:last-child) {
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+.header {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @container (width >= 42rem) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.identity {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nameRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+}
+
+.name {
+  min-width: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  outline-style: none;
+}
+
+.engine {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--print-3);
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.section {
+  padding-block: 1.5rem;
+}
+
+.connection,
+.temporary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-block: 1.5rem;
+}
+
+.connection {
+  min-width: 0;
+}
+
+.sectionTitle,
+.protectTitle {
+  font-size: 0.875rem;
+  line-height: var(--text-sm--line-height);
+  font-weight: 500;
+}
+
+.detailsTitle {
+  margin-bottom: 0.5rem;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+
+  & > :not(:last-child) {
+    border-bottom: 1px solid var(--border);
+
+    @media (width >= 40rem) {
+      border-bottom-width: 0;
+    }
+  }
+}
+
+.none {
+  color: var(--print-3);
+}
+
+.note {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--print-3);
+}
+
+.deletion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-block: 1.5rem;
+}
+
+.protect {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.protectSwitch {
+  margin-top: 0.125rem;
+}
+
+.protectText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}

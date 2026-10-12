@@ -1,0 +1,29 @@
+{
+  // https://lefthook.dev/configuration/
+  "$schema": "./node_modules/lefthook/schema.json",
+  "pre-commit": {
+    "parallel": true,
+    "jobs": [
+      {
+        "name": "oxlint",
+        "glob": "**/*.{ts,tsx}",
+        "run": "pnpm oxlint --fix {staged_files}",
+        "stage_fixed": true,
+      },
+      {
+        "name": "oxfmt",
+        // Images and other files oxfmt cannot format would otherwise fail a commit that has nothing else.
+        "run": "pnpm oxfmt --write --no-error-on-unmatched-pattern {staged_files}",
+        "stage_fixed": true,
+      },
+    ],
+  },
+  "commit-msg": {
+    "jobs": [
+      {
+        "name": "commitlint",
+        "run": "pnpm commitlint --edit {1}",
+      },
+    ],
+  },
+}

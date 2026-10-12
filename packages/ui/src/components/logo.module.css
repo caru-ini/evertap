@@ -1,0 +1,22 @@
+@layer ui {
+  .logo {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mark {
+    flex: none;
+    width: 20px;
+    height: 20px;
+  }
+
+  .name {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+}

@@ -1,0 +1,52 @@
+name: CI
+
+# Pull requests and pushes to develop check what the change affects (turbo --affected), and main,
+# the commit each version tag points at, checks everything. Turbo's cache is shared with our machines
+# through Vercel Remote Cache.
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      # Exchanged for a Remote Cache token that lasts only this job.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # --affected compares with the commit before the push or with the pull request's base.
+          fetch-depth: 0
+      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        with:
+          version: 2026.9.18
+      - run: pnpm install --frozen-lockfile
+      # A pull request from a fork gets no OIDC token, so its checks run without the shared cache.
+      - if: github.event.pull_request.head.repo.fork != true
+        uses: vercel/setup-turborepo-remote-cache-action@49d7b1b46ba4c9251e1977986bfe18336feabc8f # v1.1.0
+        with:
+          team: ${{ vars.TURBO_TEAM }}
+      - run: pnpm check:ci
+      - env:
+          AFFECTED: ${{ (github.event_name == 'pull_request' || github.ref == 'refs/heads/develop') && 'true' || '' }}
+          # A pull request only reads the shared cache, so what it builds never reaches develop, main,
+          # or our machines.
+          TURBO_CACHE: ${{ github.event_name == 'pull_request' && 'local:rw,remote:r' || 'local:rw,remote:rw' }}
+        run: pnpm turbo run check-types test build ${AFFECTED:+--affected}
+      # The binary is there only when the change affected it.
+      - run: |
+          if [ -e dist/evertap ]; then
+            test "$(./dist/evertap --version)" = "$(node -p 'require("./apps/server/package.json").version')"
+          fi

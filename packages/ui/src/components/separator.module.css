@@ -1,0 +1,16 @@
+@layer ui {
+  .separator {
+    flex-shrink: 0;
+    background-color: var(--border);
+
+    &[data-orientation="horizontal"] {
+      width: 100%;
+      height: 1px;
+    }
+
+    &[data-orientation="vertical"] {
+      width: 1px;
+      align-self: stretch;
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "name": "site",
+  "version": "0.0.0",
+  "private": true,
+  "homepage": "https://github.com/caru-ini/evertap#readme",
+  "bugs": "https://github.com/caru-ini/evertap/issues",
+  "license": "Apache-2.0",
+  "author": "caru-ini (https://github.com/caru-ini)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caru-ini/evertap.git",
+    "directory": "apps/site"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 3001",
+    "build": "vite build",
+    "check-types": "rm -rf .css-types && tcm -a -s -p \"{app,components,lib}/**/*.module.css\" -o .css-types . && tsc --noEmit",
+    "test": "vitest run",
+    "deploy": "dotenvx run -f .env.production -- vinext-cloudflare deploy"
+  },
+  "dependencies": {
+    "@evertap/api": "workspace:*",
+    "@evertap/ui": "workspace:*",
+    "@phosphor-icons/react": "catalog:",
+    "@vinext/cloudflare": "^1.0.0",
+    "fumadocs-core": "catalog:",
+    "fumadocs-mdx": "catalog:",
+    "fumadocs-ui": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-server-dom-webpack": "^19.3.0",
+    "svgl-react": "catalog:",
+    "vinext": "^1.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "2.0.0-beta.sha-238e489d5",
+    "@dotenvx/dotenvx": "catalog:",
+    "@evertap/config": "workspace:*",
+    "@tailwindcss/vite": "catalog:",
+    "@types/mdx": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "@vitejs/plugin-rsc": "^0.5.35",
+    "cf": "1.0.0-beta.10",
+    "tailwindcss": "catalog:",
+    "typed-css-modules": "catalog:",
+    "typescript": "catalog:",
+    "vite": "8.3.0",
+    "vitest": "catalog:"
+  }
+}

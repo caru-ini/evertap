@@ -1,0 +1,26 @@
+.link {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--print-3);
+  outline: none;
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--print);
+    }
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+}
+
+.icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}

@@ -1,0 +1,19 @@
+.trigger {
+  flex-shrink: 0;
+  color: var(--print-3);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--print);
+    }
+  }
+
+  &[data-popup-open] {
+    color: var(--print);
+  }
+}
+
+.menu {
+  width: 11rem;
+  box-shadow: 0 0 0 1px var(--border);
+}

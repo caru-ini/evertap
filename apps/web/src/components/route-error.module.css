@@ -1,0 +1,10 @@
+.error {
+  border: 1px solid var(--border);
+  background-color: var(--card);
+}
+
+.actions {
+  flex-direction: row;
+  justify-content: center;
+  gap: 0.5rem;
+}

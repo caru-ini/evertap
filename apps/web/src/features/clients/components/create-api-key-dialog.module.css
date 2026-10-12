@@ -1,0 +1,29 @@
+.content {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+
+  @media (width >= 40rem) {
+    max-width: 28rem;
+  }
+}
+
+.title {
+  padding-right: 1.5rem;
+  font-weight: 600;
+}
+
+.readyTitle {
+  composes: title;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.nameInput {
+  height: 2.25rem;
+}

@@ -1,0 +1,35 @@
+.content {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+
+  @media (width >= 40rem) {
+    max-width: 32rem;
+  }
+}
+
+.title {
+  padding-right: 1.5rem;
+  font-weight: 600;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.keyInput {
+  height: 2.25rem;
+  border-color: var(--seam-2);
+  font-family: var(--mono);
+}
+
+.error {
+  font-size: 0.75rem;
+  line-height: var(--text-xs--line-height);
+  color: var(--fault);
+}
+
+.fieldTitle {
+  line-height: 1.375;
+}

@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+*.tsbuildinfo
+.tanstack/
+.vite/
+# the web build copied next to the server entry so `bun build --compile --asset` can embed it
+apps/server/public/
+
+# Turbo
+.turbo/
+
+# Generated
+apps/web/src/routeTree.gen.ts
+.css-types/
+
+# dotenvx decryption keys; the encrypted .env.production files are committed
+.env.keys
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Playwright MCP screenshots
+.playwright-mcp/

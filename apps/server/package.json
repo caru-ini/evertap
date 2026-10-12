@@ -1,0 +1,42 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "private": true,
+  "homepage": "https://github.com/caru-ini/evertap#readme",
+  "bugs": "https://github.com/caru-ini/evertap/issues",
+  "license": "Apache-2.0",
+  "author": "caru-ini (https://github.com/caru-ini)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caru-ini/evertap.git",
+    "directory": "apps/server"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "rm -rf public && cp -r ../web/dist public && bun build --compile --minify --sourcemap ./src/main.ts --asset ./public --define \"EVERTAP_VERSION='${EVERTAP_VERSION:-$npm_package_version}'\" --outfile ../../dist/evertap",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests --exclude '**/*.docker.test.ts' --exclude '**/*.bun.test.ts' && bun test bun.test",
+    "test:docker": "bun test docker.test --timeout 600000"
+  },
+  "dependencies": {
+    "@evertap/api": "workspace:*",
+    "@orpc/client": "catalog:",
+    "@orpc/server": "catalog:",
+    "aws4fetch": "catalog:",
+    "hono": "catalog:",
+    "nanoid": "catalog:",
+    "uqr": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/lib-storage": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
+    "@evertap/config": "workspace:*",
+    "@types/bun": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "web": "workspace:*"
+  }
+}

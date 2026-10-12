@@ -1,0 +1,46 @@
+.heading {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-self: stretch;
+}
+
+.button {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-sm);
+  padding-left: 0.5rem;
+  font-size: 0.875rem;
+  line-height: var(--text-sm--line-height);
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  outline-style: none;
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--ring);
+  }
+}
+
+.caret {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+  color: var(--print-3);
+  rotate: -90deg;
+  transition:
+    rotate 200ms var(--ease-out),
+    color 200ms var(--ease-out);
+
+  .button[data-panel-open] & {
+    rotate: 0deg;
+  }
+
+  @media (hover: hover) {
+    .button:hover & {
+      color: var(--foreground);
+    }
+  }
+}

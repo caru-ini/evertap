@@ -1,0 +1,154 @@
+.flow {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) auto minmax(0, 1fr) minmax(0, 18rem);
+  align-items: center;
+}
+
+.clients {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.client {
+  display: flex;
+  align-items: center;
+}
+
+.box {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--seam);
+  border-radius: var(--radius-lg);
+  background-color: var(--panel);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--print-2);
+}
+
+.across {
+  display: flex;
+  flex: 1;
+}
+
+.downOnly {
+  display: none;
+}
+
+/* As tall as the three clients, so each of their arrows lands on it. */
+.evertap {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--seam-2);
+  border-radius: var(--radius-lg);
+  background-color: var(--panel);
+}
+
+/* The arrow out of evertap sits in the grid's third column, after the box. */
+.flow > .evertap {
+  grid-column: 2;
+}
+
+.docker {
+  grid-column: 4;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--seam-2);
+  border-radius: var(--radius-lg);
+}
+
+.label {
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--print-3);
+}
+
+.service {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.5rem;
+  min-height: 2rem;
+}
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.versions {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--print-3);
+  white-space: nowrap;
+}
+
+@container diagram (width < 40rem) {
+  .flow {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+  }
+
+  /* Each client drops a line to one rule, which the arrow below carries on to evertap. */
+  .clients {
+    position: relative;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: calc((100% - 1rem) / 6);
+      right: calc((100% - 1rem) / 6);
+      height: 1px;
+      background-color: var(--seam-2);
+    }
+  }
+
+  .client {
+    flex-direction: column;
+
+    &::after {
+      content: "";
+      width: 1px;
+      height: 0.75rem;
+      background-color: var(--seam-2);
+    }
+  }
+
+  .box {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .across {
+    display: none;
+  }
+
+  .downOnly {
+    display: flex;
+    justify-content: center;
+  }
+
+  .flow > .evertap,
+  .docker {
+    grid-column: 1;
+  }
+
+  .evertap {
+    padding: 0.75rem;
+  }
+}

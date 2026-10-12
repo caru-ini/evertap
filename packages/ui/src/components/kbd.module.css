@@ -1,0 +1,41 @@
+@layer ui {
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    width: fit-content;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--muted);
+    padding-inline: 0.25rem;
+    color: var(--muted-foreground);
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    line-height: var(--text-xs--line-height);
+    font-weight: 500;
+    pointer-events: none;
+    user-select: none;
+
+    :global([data-slot="tooltip-content"]) & {
+      background-color: color-mix(in oklab, var(--background) 20%, transparent);
+      color: var(--background);
+    }
+
+    :global(.dark) :global([data-slot="tooltip-content"]) & {
+      background-color: color-mix(in oklab, var(--background) 10%, transparent);
+    }
+
+    & svg:not([class*="size-"]) {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+  }
+
+  .group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}

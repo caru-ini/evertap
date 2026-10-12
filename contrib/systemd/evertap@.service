@@ -1,0 +1,34 @@
+# Runs `evertap serve` at boot as the user named after the @. That user must be able to use Docker
+# (the docker group, which is as good as root on this machine). Run it as yourself: evertap keeps
+# its data in that user's ~/.local/share/evertap, where `evertap signin-link` and the other
+# commands you run on this machine find it.
+#
+# The install script puts this file in /etc/systemd/system, enables evertap@<you>, and replaces the
+# file each time it runs. Make changes of your own in a drop-in, which it leaves alone:
+# sudo systemctl edit evertap@. To install it by hand instead, and restart it after each upgrade:
+#
+#   sudo cp evertap@.service /etc/systemd/system/
+#   sudo systemctl enable --now evertap@$USER
+#
+# Stop it before `evertap uninstall` (sudo systemctl disable --now evertap@$USER). Settings that
+# override evertap's own go in /etc/evertap/evertap.env; start from
+# https://github.com/caru-ini/evertap/blob/main/contrib/systemd/evertap.env.
+
+[Unit]
+Description=evertap
+Documentation=https://github.com/caru-ini/evertap
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+User=%i
+EnvironmentFile=-/etc/evertap/evertap.env
+ExecStart=/usr/local/bin/evertap serve
+# Databases and buckets are reached through this process, even while they keep running, so bring
+# it back whenever it stops. 5 seconds stays under systemd's default limit on restarts while
+# Docker is still starting.
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

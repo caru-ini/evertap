@@ -1,0 +1,6 @@
+{
+  "extends": "@evertap/config/tsconfig.base.json",
+  // The registry hashes tokens with node:crypto, which Bun provides too.
+  "compilerOptions": { "types": ["node"] },
+  "include": ["src"]
+}

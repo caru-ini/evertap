@@ -1,0 +1,7 @@
+{
+  "extends": "@evertap/config/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["bun"]
+  },
+  "include": ["src", "scripts"]
+}

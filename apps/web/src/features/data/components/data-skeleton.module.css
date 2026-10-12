@@ -1,0 +1,40 @@
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.back {
+  width: 6rem;
+  height: 1.25rem;
+}
+
+.title {
+  width: 8rem;
+  height: 1.75rem;
+}
+
+.engine {
+  width: 12rem;
+  height: 1rem;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.row {
+  width: 100%;
+  max-width: 28rem;
+  height: 1rem;
+}

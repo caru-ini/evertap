@@ -1,0 +1,61 @@
+.tag {
+  border-radius: var(--radius-sm);
+  background-color: var(--panel-3);
+  padding-inline: 0.25rem;
+  font-family: var(--sans);
+  font-size: 11px;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--print-3);
+}
+
+.value {
+  display: block;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The box hugs the table so its rules end where the columns do. */
+.scroll {
+  width: fit-content;
+  max-width: 100%;
+  max-height: 70dvh;
+  overflow: auto;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.head {
+  position: sticky;
+  /* At fractional zoom a header stuck exactly at 0 can leave a sliver of scrolled rows above it. */
+  top: -1px;
+  z-index: 10;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--panel-2);
+  padding: 0.375rem 0.75rem;
+  text-align: left;
+  vertical-align: bottom;
+  font-weight: 400;
+
+  &:first-child {
+    border-left: 1px solid var(--border);
+  }
+}
+
+.cell {
+  height: 2.25rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding-inline: 0.75rem;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &:first-child {
+    border-left: 1px solid var(--border);
+  }
+}

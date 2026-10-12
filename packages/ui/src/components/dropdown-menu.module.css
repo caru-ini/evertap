@@ -1,0 +1,195 @@
+@layer ui {
+  .positioner {
+    isolation: isolate;
+    z-index: 50;
+    outline: none;
+  }
+
+  .content {
+    z-index: 50;
+    max-height: var(--available-height);
+    width: var(--anchor-width);
+    min-width: 8rem;
+    transform-origin: var(--transform-origin);
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: var(--radius-lg);
+    background-color: var(--popover);
+    padding: 0.25rem;
+    color: var(--popover-foreground);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent),
+      var(--shadow-md);
+    outline: none;
+    transition:
+      opacity 100ms ease,
+      scale 100ms ease,
+      translate 100ms ease;
+
+    &[data-closed] {
+      overflow: hidden;
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+      opacity: 0;
+      scale: 0.95;
+    }
+
+    &[data-starting-style] {
+      &[data-side="top"] {
+        translate: 0 0.5rem;
+      }
+
+      &[data-side="bottom"] {
+        translate: 0 -0.5rem;
+      }
+
+      &[data-side="left"],
+      &[data-side="inline-start"] {
+        translate: 0.5rem 0;
+      }
+
+      &[data-side="right"],
+      &[data-side="inline-end"] {
+        translate: -0.5rem 0;
+      }
+    }
+  }
+
+  .subContent {
+    width: auto;
+    min-width: 96px;
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent),
+      var(--shadow-lg);
+  }
+
+  .label {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.75rem;
+    line-height: var(--text-xs--line-height);
+    font-weight: 500;
+    color: var(--muted-foreground);
+
+    &[data-inset] {
+      padding-left: 1.75rem;
+    }
+  }
+
+  .item,
+  .subTrigger,
+  .choiceItem {
+    display: flex;
+    cursor: default;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: var(--radius-md);
+    padding: 0.25rem 0.375rem;
+    font-size: 0.875rem;
+    line-height: var(--text-sm--line-height);
+    outline-style: none;
+    user-select: none;
+
+    @media (forced-colors: active) {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+    }
+
+    &:focus {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+  }
+
+  .item,
+  .choiceItem {
+    position: relative;
+
+    &[data-disabled] {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+  }
+
+  .item:not([data-variant="destructive"]):focus *,
+  .subTrigger:not([data-variant="destructive"]):focus *,
+  .choiceItem:focus * {
+    color: var(--accent-foreground);
+  }
+
+  .item[data-variant="destructive"] {
+    color: var(--destructive);
+
+    &:focus {
+      background-color: color-mix(in oklab, var(--destructive) 10%, transparent);
+      color: var(--destructive);
+    }
+
+    :global(.dark) &:focus {
+      background-color: color-mix(in oklab, var(--destructive) 20%, transparent);
+    }
+
+    & > svg {
+      color: var(--destructive);
+    }
+  }
+
+  .subTrigger {
+    &[data-popup-open],
+    &[data-open] {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  .choiceItem {
+    padding-right: 2rem;
+  }
+
+  .item,
+  .subTrigger,
+  .choiceItem {
+    &[data-inset] {
+      padding-left: 1.75rem;
+    }
+  }
+
+  .caret {
+    margin-left: auto;
+  }
+
+  .indicator {
+    pointer-events: none;
+    position: absolute;
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .separator {
+    margin: 0.25rem -0.25rem;
+    height: 1px;
+    background-color: var(--border);
+  }
+
+  .shortcut {
+    margin-left: auto;
+    font-size: 0.75rem;
+    line-height: var(--text-xs--line-height);
+    letter-spacing: 0.1em;
+    color: var(--muted-foreground);
+
+    .item:focus & {
+      color: var(--accent-foreground);
+    }
+  }
+}
