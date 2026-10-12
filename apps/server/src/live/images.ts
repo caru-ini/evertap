@@ -18,8 +18,8 @@ export const DATABASE_IMAGES: Record<DatabaseEngine, Record<string, string>> = {
     "8.4": "mysql:8.4@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242",
   },
   redis: {
-    "8.10": "redis:8.10@sha256:6f81e8915c60b065a524e6967e0ad1c639ba6efa84d669f823683ea04d9150ee",
-    "8.2": "redis:8.2@sha256:164c759a0c342ee69d08fc99219382b0fd682181465c0df2e0e6911f4c85d73c",
-    "7.4": "redis:7.4@sha256:c6eabf748fc7a61dbb5a705c78bcf3d6377b1127a97d0ce965c11c44ba46896f",
+    "8.10": "redis:8.10@sha256:2c2dff791878316e3b083188be0d578423b24813cdda5de0e80ea4f7b3e6bfd6",
+    "8.2": "redis:8.2@sha256:47670742d7924adbcdb404d1288b6327815b23141969c0939b8e5d61f78c2634",
+    "7.4": "redis:7.4@sha256:4fa24486b8bcca8eec45ee0eb166edc674795e53a2b53d1a9ef263eecebaac85",
   },
 } satisfies { [E in DatabaseEngine]: Record<(typeof DATABASE_VERSIONS)[E][number], string> };
