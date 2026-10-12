@@ -5,7 +5,7 @@ Notable changes to evertap are listed here, and versions follow
 [git-cliff](https://git-cliff.org) writes each release's section from the subjects of its
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-## [Unreleased]
+## [0.1.0](https://github.com/caru-ini/evertap/releases/tag/v0.1.0) - 2026-10-12
 
 ### Added
 
@@ -91,5 +91,3 @@ Notable changes to evertap are listed here, and versions follow
   installs offline; installed copies are refreshed when the CLI is updated, except ones you have
   edited. `evertap login` offers to install it once. evertap.dev serves the same skill at
   `/.well-known/agent-skills/`, so `npx skills add https://evertap.dev` installs it too.
-
-[Unreleased]: https://github.com/caru-ini/evertap/commits/main
