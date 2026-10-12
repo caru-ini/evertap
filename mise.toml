@@ -1,7 +1,9 @@
 #:schema https://mise.jdx.dev/schema/mise.json
 # Tool versions for this repo (https://mise.jdx.dev). Run `mise install` once.
-# bun >= 1.4 is required: `bun build --compile --asset` embeds the SPA into the binary.
+# bun >= 1.4 is required: `bun build --compile --asset` embeds the SPA into the binary. It is pinned
+# exactly, as releases ship the bun they are built with and a patch release has changed behavior:
+# move it on purpose, with `pnpm -F server test:docker`.
 [tools]
 node = "24"
 pnpm = "12"
-bun = "1.4"
+bun = "1.4.3"
