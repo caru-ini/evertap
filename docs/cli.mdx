@@ -1,5 +1,7 @@
 ---
 title: CLI
+description: One evertap binary is both the server and the CLI. Every command, with its flags.
+icon: TerminalWindow
 ---
 
 One `evertap` binary is both the server (`evertap serve`) and the CLI. `evertap help` lists every
@@ -8,7 +10,9 @@ is 1.
 
 The CLI talks to the evertap on the same machine over its socket, which needs no sign-in, or to the
 one `evertap login` paired it with, or to `EVERTAP_URL` with `EVERTAP_API_KEY` in CI
-([Configuration](configuration.md#the-cli)).
+([Configuration](configuration.mdx#the-cli)).
+
+<Precedence of="cli" />
 
 ## Resources
 
@@ -16,6 +20,8 @@ A resource is a database or a bucket. Commands that take `<name>` also take the 
 Names are unique per service, so if a database and a bucket share one, add `--engine <service>`.
 
 Services are `postgres` (also `postgresql` or `pg`), `mysql`, `redis`, and `garage` for buckets.
+
+<Services />
 
 | Command                                                                                                       | What it does                                                 |
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -55,7 +61,7 @@ Names:
   generates.
 - Buckets: 3 to 63 lowercase letters, digits, or `-`, starting and ending with a letter or digit.
   The name is the first bucket's; its key can create more with any name
-  ([Buckets](connecting.md#buckets)).
+  ([Buckets](connecting.mdx#buckets)).
 
 The first database of a version, or the first bucket, waits while its image downloads. If that takes
 over a minute, `create` asks you to try again in a minute while the download goes on. Each MySQL
@@ -66,7 +72,7 @@ later ones about 4.
 
 `reachable` makes a bucket's signed links work on any device, through the address buckets have of
 their own, and prints the `S3_PUBLIC_ENDPOINT` to sign them with; `--off` undoes it. Objects still
-need a signature ([Signed links that work anywhere](connecting.md#signed-links-that-work-anywhere)).
+need a signature ([Signed links that work anywhere](connecting.mdx#signed-links-that-work-anywhere)).
 It is refused in `local` mode, until buckets have an address, and for a bucket that shares its name
 with a bucket on the other service, which an earlier evertap allowed.
 
@@ -78,13 +84,13 @@ removes the data for good; evertap keeps no backups.
 
 ## Pairing and status
 
-| Command                                                      | What it does                                                                                       |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `evertap login <url>`                                        | Pair this machine with evertap; a person approves the code in a browser ([Connect](connecting.md)) |
-| `evertap logout`                                             | Revoke this machine's token and forget the address                                                 |
-| `evertap status`                                             | Show which evertap this CLI uses and whether it is signed in                                       |
-| `evertap connect [--host <address>] [--engine <service>]...` | Carry database and bucket connections from this machine to evertap; keep it running                |
-| `evertap doctor`                                             | Check Docker, each service, and the entries                                                        |
+| Command                                                      | What it does                                                                                        |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| `evertap login <url>`                                        | Pair this machine with evertap; a person approves the code in a browser ([Connect](connecting.mdx)) |
+| `evertap logout`                                             | Revoke this machine's token and forget the address                                                  |
+| `evertap status`                                             | Show which evertap this CLI uses and whether it is signed in                                        |
+| `evertap connect [--host <address>] [--engine <service>]...` | Carry database and bucket connections from this machine to evertap; keep it running                 |
+| `evertap doctor`                                             | Check Docker, each service, and the entries                                                         |
 
 `evertap doctor` works from anywhere. On the machine running evertap it also shows the Docker socket,
 the data directory, and why a service failed to start, which it leaves out over the network.
@@ -139,24 +145,24 @@ npx skills add https://evertap.dev
 
 These run as the user that runs `evertap serve`, over its socket.
 
-| Command                                                                                                                           | What it does                                                                                          |
-| --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `evertap serve`                                                                                                                   | Run evertap on this machine                                                                           |
-| `evertap setup [--mode local\|network\|cloudflare] [--url <address>] [--listen <address>] [--zone <domain>] [--s3-url <address>]` | Choose where you open evertap from, then sign a browser in ([Install](install.md#set-up-and-sign-in)) |
-| `evertap open`                                                                                                                    | Open evertap in a browser on this machine, signed in                                                  |
-| `evertap signin-link`                                                                                                             | Print a one-time link and QR code that signs a browser in                                             |
-| `evertap uninstall [--yes]`                                                                                                       | Remove everything evertap made on this machine, every database's data included                        |
+| Command                                                                                                                           | What it does                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `evertap serve`                                                                                                                   | Run evertap on this machine                                                                                             |
+| `evertap setup [--mode local\|network\|cloudflare] [--url <address>] [--listen <address>] [--zone <domain>] [--s3-url <address>]` | Choose where you open evertap from, then sign a browser in ([Set up and sign in](install/linux.mdx#set-up-and-sign-in)) |
+| `evertap open`                                                                                                                    | Open evertap in a browser on this machine, signed in                                                                    |
+| `evertap signin-link`                                                                                                             | Print a one-time link and QR code that signs a browser in                                                               |
+| `evertap uninstall [--yes]`                                                                                                       | Remove everything evertap made on this machine, every database's data included                                          |
 
 `setup` asks questions in a terminal. With any flag, or without a terminal, it asks nothing and
 takes the flags, the answers saved before, and the defaults. `--mode` takes `local` for This
 computer only, `cloudflare` for Anywhere, through Cloudflare, and `network` for the other two:
 listening on every interface (`--listen 0.0.0.0`) for Devices on your network, and on `127.0.0.1`
 or Docker's bridge with `--url` for Behind your own proxy or tunnel ([Choose how evertap is
-reached](modes.md)). For a Cloudflare Tunnel it creates,
+reached](modes.mdx)). For a Cloudflare Tunnel it creates,
 setup in a terminal asks for the names of evertap and buckets and opens Cloudflare's page to
 approve evertap, then waits for the code evertap.dev shows; without a terminal, it takes an API
 token from `CLOUDFLARE_API_TOKEN` and the domain from `--zone`
-([Cloudflare Tunnel](cloudflare.md#let-evertap-create-the-tunnel)). `--s3-url` gives buckets reached
+([Cloudflare Tunnel](cloudflare.mdx#let-evertap-create-the-tunnel)). `--s3-url` gives buckets reached
 from anywhere their address behind your proxy or your own tunnel; setup keeps the one saved before
 without it, and never asks for one. A tunnel evertap creates serves them at the name you give it for
 buckets.
@@ -166,9 +172,9 @@ volumes, and network, its files in the data directory, this machine's sign-in, t
 installed, the `ev.internal` line in the hosts file, and on macOS the loopback alias and its startup
 job. A copy of the skill you changed stays. Stop `evertap serve` first. A Cloudflare Tunnel that
 evertap created stays in Cloudflare, and `uninstall` lists what to remove there
-([Cloudflare Tunnel](cloudflare.md#remove-the-tunnel)). On a laptop, it signs out and removes the
+([Cloudflare Tunnel](cloudflare.mdx#remove-the-tunnel)). On a laptop, it signs out and removes the
 agent skill and the `ev.internal` line. It does not remove the `evertap` binary or its systemd unit
-([Limitations](limitations.md#uninstall)).
+([Limitations](limitations.mdx#uninstall)).
 
 ## Other
 

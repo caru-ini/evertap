@@ -2,7 +2,7 @@ import { DATABASE_VERSIONS, type ResourceEngine } from "@evertap/api/rules";
 import { Logo } from "@evertap/ui/components/logo";
 import { BrowserIcon, GitBranchIcon, TerminalWindowIcon } from "@phosphor-icons/react/ssr";
 
-import { Arrow, Diagram, Mark } from "./parts.tsx";
+import { Arrow, Diagram, Mark } from "../../../components/diagrams/parts.tsx";
 
 import styles from "./overview.module.css";
 

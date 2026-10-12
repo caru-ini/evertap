@@ -1,0 +1,10 @@
+.rows {
+  display: grid;
+  gap: 0.5rem;
+}
+
+@container diagram (width < 32rem) {
+  .rows {
+    gap: 1.25rem;
+  }
+}

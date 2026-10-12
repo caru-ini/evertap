@@ -1,0 +1,24 @@
+.brand {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+}
+
+/* Only hide: showing one with a display of its own would undo the reset's block svg. */
+:global(html:not(.dark)) .onDark,
+:global(.dark) .onLight {
+  display: none;
+}
+
+/* Tux's body is black, lost on the dark theme, so it gets a light edge: svgl's second shape is the body. */
+:global(.dark) .tux {
+  /* The head touches the top of the viewBox, which would cut the edge flat. */
+  overflow: visible;
+}
+
+:global(.dark) .tux > g > path:nth-child(2) {
+  stroke: var(--print-2);
+  stroke-width: 18;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}

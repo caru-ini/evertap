@@ -1,5 +1,7 @@
 ---
 title: Reverse proxies
+description: Serve evertap over HTTPS behind Caddy, nginx, or another proxy you run.
+icon: ArrowsLeftRight
 ---
 
 In `network` mode, evertap can sit behind a reverse proxy you run, which serves it over HTTPS at an
@@ -7,6 +9,8 @@ address such as `https://evertap.example.com`. evertap itself serves plain HTTP 
 certificates to the proxy. One hostname is enough: the UI, the API, and the database and bucket
 connections from `evertap connect` all use it. Only buckets reached from anywhere need a second
 ([below](#buckets-reached-from-anywhere)).
+
+<ProxyPath />
 
 ## Set it up
 
@@ -49,7 +53,10 @@ The generated configurations already do all of this:
 evertap pings every WebSocket every 25 seconds, so a proxy's idle timeout, such as nginx's 60
 seconds, does not close them.
 
-## Caddy
+## Caddy or nginx
+
+<Tabs groupId="proxy" persist items={["Caddy", "nginx"]}>
+<Tab value="Caddy">
 
 Caddy gets a certificate on its own, and passes the Host header and WebSocket upgrades by default.
 For `https://evertap.example.com` and evertap on `127.0.0.1:8080`, setup prints:
@@ -63,7 +70,8 @@ https://evertap.example.com {
 }
 ```
 
-## nginx
+</Tab>
+<Tab value="nginx">
 
 ```nginx
 # In nginx's http block, such as in /etc/nginx/conf.d/evertap.conf
@@ -101,10 +109,13 @@ server {
 Use `$http_host`, not `$host`, which drops the port, and leave `proxy_pass` without a path after the
 address.
 
+</Tab>
+</Tabs>
+
 ## Buckets reached from anywhere
 
 A bucket's signed links work on any device only through an address of buckets' own, such as
-`https://s3.example.com` ([Signed links that work anywhere](connecting.md#signed-links-that-work-anywhere)).
+`https://s3.example.com` ([Signed links that work anywhere](connecting.mdx#signed-links-that-work-anywhere)).
 Serve it from a second hostname on the proxy, pointed at evertap's bucket entry. That entry listens
 on port 9900 (`EVERTAP_PUBLIC_S3_PORT`) beside the UI: on `127.0.0.1` when the UI listens there or on
 every interface, and on Docker's bridge address for a proxy run with Docker. It listens only once
@@ -126,11 +137,17 @@ reached from anywhere. A bucket's page shows it for `s3.example.com` until an ad
   without a valid signature. It tells a CDN not to keep its answers, with
   `Cloudflare-CDN-Cache-Control: no-store`.
 
+<Tabs groupId="proxy" persist items={["Caddy", "nginx"]}>
+<Tab value="Caddy">
+
 ```caddyfile
 https://s3.example.com {
 	reverse_proxy 127.0.0.1:9900
 }
 ```
+
+</Tab>
+<Tab value="nginx">
 
 ```nginx
 # Buckets reached from anywhere, at an address of their own
@@ -157,6 +174,9 @@ server {
 }
 ```
 
+</Tab>
+</Tabs>
+
 Setup's check covers evertap's own address, not this one.
 
 ## A proxy run with Docker
@@ -167,7 +187,7 @@ on Linux does. A proxy on one of your Compose networks reaches that address too.
 
 If the check says your proxy cannot reach evertap even though it points at that address, a firewall
 on the machine may be dropping connections from Docker's networks. See
-[Limitations](limitations.md#not-tested-yet).
+[Limitations](limitations.mdx#not-tested-yet).
 
 ## Traefik
 

@@ -1,0 +1,62 @@
+---
+title: Install
+description: evertap runs on one machine with Docker. Laptops and CI take the CLI alone and reach the databases on it.
+icon: DownloadSimple
+---
+
+<InstallPaths />
+
+## Where will evertap run?
+
+Pick the machine that runs evertap, the one the databases and buckets live on, for its steps.
+
+<Cards>
+  <Card
+    icon="Linux"
+    title="Linux"
+    description="A home server, a VPS, or your own Linux computer, with Docker Engine."
+    href="linux.mdx"
+  />
+  <Card
+    icon="Apple"
+    title="macOS"
+    description="Your Mac, with Docker Desktop, OrbStack, or Colima."
+    href="macos.mdx"
+  />
+  <Card
+    icon="Windows"
+    title="Windows"
+    description="Inside WSL, following the Linux steps."
+    href="linux.mdx#wsl"
+  />
+  <Card
+    icon="Docker"
+    title="In Docker"
+    description="evertap's own image, started with Compose on Linux."
+    href="../docker.mdx"
+  />
+</Cards>
+
+## On a laptop or in CI
+
+Laptops and CI runners on Linux or macOS, x64 or arm64, take the CLI alone and need no Docker. On
+Windows, use the CLI inside WSL.
+
+```sh
+curl -fsSL https://evertap.dev/install.sh | EVERTAP_ROLE=client sh
+```
+
+<Cards>
+  <Card
+    icon="Laptop"
+    title="Pair a laptop"
+    description="Sign the CLI in once, then run evertap connect while you work."
+    href="../connecting.mdx#pair-the-laptop"
+  />
+  <Card
+    icon="GitBranch"
+    title="CI"
+    description="An API key in the environment, with no sign-in."
+    href="../connecting.mdx#ci-with-an-api-key"
+  />
+</Cards>

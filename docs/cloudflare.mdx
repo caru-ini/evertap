@@ -1,5 +1,7 @@
 ---
 title: Cloudflare Tunnel
+description: evertap creates a tunnel in your Cloudflare account, so browsers and laptops reach it from anywhere and the machine needs no open ports.
+icon: Cloudflare
 ---
 
 When you open evertap "Anywhere, through Cloudflare", a Cloudflare Tunnel carries browsers and the
@@ -10,7 +12,11 @@ evertap creates the tunnel for you, from Settings or `evertap setup`, once you a
 Cloudflare ([below](#let-evertap-create-the-tunnel)). A tunnel you run yourself is "Behind your own
 proxy or tunnel" instead ([Run the tunnel yourself](#run-the-tunnel-yourself)).
 
+<TunnelPath />
+
 ## Let evertap create the tunnel
+
+<CloudflareCreates />
 
 You give two names, approve evertap on Cloudflare's own page, and paste back the code that
 evertap.dev then shows. The names are evertap's, such as `evertap.example.com`, and the one for
@@ -43,13 +49,31 @@ until a bucket is.
 
 ### From Settings
 
-1. In Settings, choose Change access, then Anywhere, through Cloudflare, and Continue.
-2. Enter the name for evertap, such as `evertap.example.com`, and the name for buckets if not `s3.`
-   in the same domain, and choose Continue.
-3. Choose Open Cloudflare. On Cloudflare's page, choose the account that has the domain, and allow
-   evertap.
-4. Cloudflare sends you to evertap.dev, which shows a code. Copy it, paste it into Settings, and
-   choose Create the tunnel.
+<Steps>
+<Step>
+
+In Settings, choose Change access, then Anywhere, through Cloudflare, and Continue.
+
+</Step>
+<Step>
+
+Enter the name for evertap, such as `evertap.example.com`, and the name for buckets if not `s3.` in
+the same domain, and choose Continue.
+
+</Step>
+<Step>
+
+Choose Open Cloudflare. On Cloudflare's page, choose the account that has the domain, and allow
+evertap.
+
+</Step>
+<Step>
+
+Cloudflare sends you to evertap.dev, which shows a code. Copy it, paste it into Settings, and choose
+Create the tunnel.
+
+</Step>
+</Steps>
 
 If your browser came in at an address that stops working once the tunnel is in force, such as this
 machine's address on your network, Settings then gives a button that opens evertap at its new name
@@ -127,7 +151,7 @@ domain.
 ### What it needs
 
 - Docker on Linux. cloudflared runs with the host's network to reach evertap on `127.0.0.1`. When
-  evertap runs in Docker ([Run evertap in Docker](docker.md)), run setup inside its container with
+  evertap runs in Docker ([Run evertap in Docker](docker.mdx)), run setup inside its container with
   `docker exec -it evertap evertap setup`, and leave `EVERTAP_PUBLIC_URL` unset: the tunnel has
   its own address, and evertap does not start with both.
 - Outgoing connections to Cloudflare on TCP 7844. evertap runs cloudflared over HTTP/2, not QUIC,
@@ -189,23 +213,42 @@ those before it asks you to confirm: to remove them, stop there and choose anoth
 
 ## Run the tunnel yourself
 
-1. In the Cloudflare dashboard, open Networking → Tunnels, choose Create a tunnel, and name it, such
-   as `my-evertap`. Do not name it `evertap`: evertap uses that name for the tunnel it creates, and
-   would take over a stopped tunnel of yours with that name, replacing its routes.
-2. Run cloudflared on the machine running evertap with the command the dashboard shows, such as
-   `sudo cloudflared service install <token>`, or with Docker ([below](#cloudflared-in-docker)).
-3. In the tunnel's Routes, add a route for a published application: a name such as
-   `evertap.example.com`, with the service URL `http://127.0.0.1:8080`.
-   - Write `127.0.0.1`, not `localhost`, which can lead to `::1`, where evertap does not listen.
-   - Keep the name one level under your domain, such as `evertap.example.com`. Cloudflare's free
-     certificate covers one level, not `evertap.dev.example.com`.
-   - If you changed `EVERTAP_PORT`, use that port.
-4. On the machine running evertap, run `evertap setup`, choose "Behind your own proxy or tunnel"
-   and "On this machine", and give the address, `https://evertap.example.com`. Without a terminal:
+<Steps>
+<Step>
 
-   ```sh
-   evertap setup --mode network --url https://evertap.example.com
-   ```
+In the Cloudflare dashboard, open Networking → Tunnels, choose Create a tunnel, and name it, such as
+`my-evertap`. Do not name it `evertap`: evertap uses that name for the tunnel it creates, and would
+take over a stopped tunnel of yours with that name, replacing its routes.
+
+</Step>
+<Step>
+
+Run cloudflared on the machine running evertap with the command the dashboard shows, such as
+`sudo cloudflared service install <token>`, or with Docker ([below](#cloudflared-in-docker)).
+
+</Step>
+<Step>
+
+In the tunnel's Routes, add a route for a published application: a name such as
+`evertap.example.com`, with the service URL `http://127.0.0.1:8080`.
+
+- Write `127.0.0.1`, not `localhost`, which can lead to `::1`, where evertap does not listen.
+- Keep the name one level under your domain, such as `evertap.example.com`. Cloudflare's free
+  certificate covers one level, not `evertap.dev.example.com`.
+- If you changed `EVERTAP_PORT`, use that port.
+
+</Step>
+<Step>
+
+On the machine running evertap, run `evertap setup`, choose "Behind your own proxy or tunnel" and
+"On this machine", and give the address, `https://evertap.example.com`. Without a terminal:
+
+```sh
+evertap setup --mode network --url https://evertap.example.com
+```
+
+</Step>
+</Steps>
 
 Setup ends with a one-time sign-in link to that address. If the link does not open evertap, check
 the tunnel's route.
@@ -231,7 +274,7 @@ same server shows the tunnel's configuration.
 ## Buckets reached from anywhere
 
 A bucket's signed links work on any device once it is reachable from anywhere
-([Signed links that work anywhere](connecting.md#signed-links-that-work-anywhere)). With the tunnel
+([Signed links that work anywhere](connecting.mdx#signed-links-that-work-anywhere)). With the tunnel
 evertap creates, buckets are served at the name you gave them: turn it on for a bucket, and that is
 all.
 
@@ -259,7 +302,7 @@ Cloudflare as plain HTTP requests, so more of its rules apply to them:
 
 ## Laptops
 
-Laptops pair and connect as they do with any other answer ([Connect from your laptop](connecting.md)):
+Laptops pair and connect as they do with any other answer ([Connect from your laptop](connecting.mdx)):
 
 ```sh
 evertap login https://evertap.example.com
@@ -286,7 +329,7 @@ The more specific path wins, so Access lets through everything the CLI uses, whi
 - Cloudflare closes a WebSocket that stays quiet for a while, about 100 seconds by most reports.
   evertap and `evertap connect` ping every 25 seconds, so open connections stay up.
 - Connections still drop when Cloudflare or cloudflared restarts. Use a connection pool that checks
-  connections ([Connection pools](connecting.md#connection-pools)).
+  connections ([Connection pools](connecting.mdx#connection-pools)).
 - Cloudflare waits 125 seconds for an answer. Creating the first database of a version waits up to a
   minute for the download, then asks you to try again while it goes on.
 - Cloudflare limits a request body to 100 MB on the Free and Pro plans. The UI uploads files in

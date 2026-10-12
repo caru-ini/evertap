@@ -1,0 +1,57 @@
+.tree {
+  display: grid;
+}
+
+/* A stem from evertap to one rule, which each place's arrow leaves from. */
+.root {
+  display: grid;
+  justify-items: center;
+
+  &::after {
+    content: "";
+    width: 1px;
+    height: 0.75rem;
+    background-color: var(--seam-2);
+  }
+}
+
+.places {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 0.5rem;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: calc((100% - 1rem) / 6);
+    right: calc((100% - 1rem) / 6);
+    height: 1px;
+    background-color: var(--seam-2);
+  }
+
+  & > li {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    justify-items: center;
+
+    & > :last-child {
+      justify-self: stretch;
+    }
+  }
+}
+
+@container diagram (width < 32rem) {
+  .places {
+    grid-template-columns: minmax(0, 1fr);
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .root::after {
+    display: none;
+  }
+}

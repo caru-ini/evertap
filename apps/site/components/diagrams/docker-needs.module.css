@@ -1,0 +1,11 @@
+.image {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.items {
+  display: grid;
+  gap: 0.5rem;
+}

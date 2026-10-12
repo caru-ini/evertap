@@ -1,5 +1,7 @@
 ---
 title: Connect from your laptop
+description: Every database and bucket is at ev.internal on its standard port. On a laptop, evertap connect carries the connections there.
+icon: Plug
 ---
 
 Create a database or bucket in the UI with New resource, or with the CLI on the machine running
@@ -48,9 +50,11 @@ What makes `ev.internal` reach evertap depends on the mode:
 - In `network` and `cloudflare` mode, each laptop runs `evertap connect`, which listens at
   `ev.internal` and carries each connection to evertap. The rest of this page sets that up.
 
+<ConnectPath />
+
 ## Pair the laptop
 
-[Install evertap](install.md#install-the-binary) on the laptop with the install script, and answer
+[Install evertap](install/index.mdx#on-a-laptop-or-in-ci) on the laptop with the install script, and answer
 that it is a laptop that connects to evertap on another machine. It needs no Docker. Then pair it
 with evertap:
 
@@ -158,8 +162,12 @@ evertap itself in `local` mode.
 
 ### Apps in containers
 
+<Callout type="warn">
+
 An app in a container does not reach `ev.internal`, just as it does not reach your laptop's
 `localhost`. An app that runs in Docker keeps its database in its own Compose file.
+
+</Callout>
 
 ## Connection pools
 
@@ -225,12 +233,16 @@ definers.
 The `mysql` client takes no `mysql://` URL, so the `mysql` command on the resource's page in the UI
 gives each part of it as an option.
 
+<Callout title="MariaDB's mysql client">
+
 MariaDB's `mysql` client, 11.4 and later, such as the `mysql` command on Debian 13, checks the
 server's certificate by default. The certificate evertap's MySQL entry offers is self-signed, so
 that client stops at `ev.internal` with "TLS/SSL error: Certificate verification failure". Add
 `--ssl-verify-server-cert=0` to the command; the connection is still encrypted. Oracle's `mysql` 8
 and later does not check the certificate unless asked, and refuses that option, so the command on
 the page leaves it out.
+
+</Callout>
 
 ## Redis
 
@@ -246,9 +258,13 @@ there, such as `FLUSHALL` and `SELECT`, without reaching another resource's keys
 
 ## Buckets
 
-Use the endpoint with path-style addressing, since `<bucket>.ev.internal` does not resolve. No AWS
-SDK reads `S3_FORCE_PATH_STYLE`, so pass it in code: `forcePathStyle: true` in the AWS SDK for
-JavaScript, or `Config(s3={"addressing_style": "path"})` in boto3.
+<Callout type="warn" title="Use path-style addressing">
+
+`<bucket>.ev.internal` does not resolve. No AWS SDK reads `S3_FORCE_PATH_STYLE`, so pass it in code:
+`forcePathStyle: true` in the AWS SDK for JavaScript, or `Config(s3={"addressing_style": "path"})`
+in boto3.
+
+</Callout>
 
 A bucket resource is an access key and a first bucket with the resource's name. The key can create
 more buckets with any name, as tests, rclone, and `aws s3 mb` do. Each key keeps its buckets' names
@@ -289,10 +305,12 @@ outside service that fetches the file, turn on Reachable from anywhere on the bu
 evertap reachable photos          # evertap reachable photos --off turns it off
 ```
 
+<SignedLinks />
+
 Objects still need a signature: this is not S3's public access, and a link without one is refused.
 It takes `network` or `cloudflare` mode, and an address of buckets' own, such as
-`https://s3.example.com`, that your [proxy](proxies.md#buckets-reached-from-anywhere) or
-[tunnel](cloudflare.md#buckets-reached-from-anywhere) serves. A tunnel that evertap creates serves
+`https://s3.example.com`, that your [proxy](proxies.mdx#buckets-reached-from-anywhere) or
+[tunnel](cloudflare.mdx#buckets-reached-from-anywhere) serves. A tunnel that evertap creates serves
 them at the name you gave buckets already. `local` mode does not offer it.
 
 The bucket's endpoint stays at `ev.internal`, so the rest of your app works as before, and its
@@ -304,6 +322,9 @@ S3_PUBLIC_ENDPOINT=https://s3.example.com
 
 Sign links with a second client on that address, and keep your app's client on
 `AWS_ENDPOINT_URL_S3`. Signing happens in your app, so the second client makes no requests:
+
+<Tabs groupId="language" persist items={["JavaScript", "Python"]}>
+<Tab value="JavaScript">
 
 ```js
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
@@ -321,6 +342,9 @@ const url = await getSignedUrl(
   { expiresIn: 3600 },
 );
 ```
+
+</Tab>
+<Tab value="Python">
 
 ```python
 import os
@@ -344,21 +368,35 @@ url = signer.generate_presigned_url(
 )
 ```
 
+</Tab>
+</Tabs>
+
 - Links are path-style, `https://s3.example.com/photos/avatar.png`: one address cannot hold each
   bucket's name in its hostname.
 - Form uploads (a presigned POST) work too.
-- Through a Cloudflare Tunnel, see its [limits](cloudflare.md#buckets-reached-from-anywhere).
+- Through a Cloudflare Tunnel, see its [limits](cloudflare.mdx#buckets-reached-from-anywhere).
 
 ## CI with an API key
 
 A CI job cannot approve `evertap login`, so it uses an API key instead.
 
-1. In the UI, open Clients → New API key and name it. The key appears once, as
-   `EVERTAP_API_KEY=evertap_…`: evertap keeps only its hash.
-2. Store it as a secret in your CI, and set `EVERTAP_URL` to the address you open evertap at. With
-   both set, the CLI needs no `login`.
-3. In the job, create what the tests need, and carry connections with `evertap connect` as on a
-   laptop:
+<Steps>
+<Step>
+
+In the UI, open Clients → New API key and name it. The key appears once, as
+`EVERTAP_API_KEY=evertap_…`: evertap keeps only its hash.
+
+</Step>
+<Step>
+
+Store it as a secret in your CI, and set `EVERTAP_URL` to the address you open evertap at. With
+both set, the CLI needs no `login`.
+
+</Step>
+<Step>
+
+In the job, create what the tests need, and carry connections with `evertap connect` as on a
+laptop:
 
 ```sh
 curl -fsSL https://evertap.dev/install.sh | EVERTAP_ROLE=client sh
@@ -374,6 +412,9 @@ timeout 10 bash -c 'until echo > /dev/tcp/127.77.0.1/5432; do sleep 0.5; done'
 
 evertap delete "$name" --yes
 ```
+
+</Step>
+</Steps>
 
 `--temporary` deletes the database after 7 days without a connection, in case the last step never
 runs. The CI runner has to reach evertap's address, so evertap on a home network needs a proxy or a

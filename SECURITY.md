@@ -24,7 +24,7 @@ time to release a fix before you disclose the issue.
 
 Only the latest release gets security fixes. Work happens on `develop`, and a fix reaches you in
 the next release; upgrade by running the install script again
-([Upgrade](docs/limitations.md#upgrade)).
+([Upgrade](https://evertap.dev/docs/limitations#upgrade)).
 
 ## What counts
 

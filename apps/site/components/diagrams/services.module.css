@@ -1,0 +1,42 @@
+.rows {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 6rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--panel-2);
+}
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.arg {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+}
+
+.versions {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--print-3);
+  text-align: right;
+}
+
+@container diagram (width < 32rem) {
+  .row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .versions {
+    grid-column: 2 / -1;
+    text-align: left;
+  }
+}

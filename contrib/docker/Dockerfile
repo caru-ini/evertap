@@ -1,4 +1,4 @@
-# evertap from a release, for running it in Docker (docs/docker.md). Build it in a directory
+# evertap from a release, for running it in Docker (docs/docker.mdx). Build it in a directory
 # holding the unpacked Linux archives, evertap-linux-x64/ and evertap-linux-arm64/:
 #
 #   docker buildx build --platform linux/amd64,linux/arm64 -f contrib/docker/Dockerfile <dir>

@@ -1,0 +1,6 @@
+{
+  "title": "Install",
+  "icon": "DownloadSimple",
+  "defaultOpen": true,
+  "pages": ["linux", "macos"]
+}

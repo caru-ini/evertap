@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     fumadocsMdx({
-      // Shiki has no Caddyfile grammar, which docs/proxies.md uses.
+      // Shiki has no Caddyfile grammar, which docs/proxies.mdx uses.
       globalOptions: {
         mdxOptions: {
           rehypeCodeOptions: { ...rehypeCodeDefaultOptions, fallbackLanguage: "text" },

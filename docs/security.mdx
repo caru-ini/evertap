@@ -1,5 +1,7 @@
 ---
 title: Security
+description: What evertap exposes, what it trusts, what it keeps on disk, and what it connects to.
+icon: ShieldCheck
 ---
 
 evertap is for development data, not production. It still holds the root keys of every database
@@ -8,6 +10,8 @@ exposes and what it trusts. To report a vulnerability, follow
 [SECURITY.md](https://github.com/caru-ini/evertap/blob/main/SECURITY.md).
 
 ## What listens where
+
+<Listeners />
 
 On the machine running evertap:
 
@@ -25,7 +29,7 @@ On the machine running evertap:
   Databases and buckets are reached from other machines only through the UI's address, by a
   signed-in `evertap connect`.
 - The one exception is a bucket you make reachable from anywhere, through the address you give
-  buckets ([Signed links that work anywhere](connecting.md#signed-links-that-work-anywhere)). Its
+  buckets ([Signed links that work anywhere](connecting.mdx#signed-links-that-work-anywhere)). Its
   entry listens beside the UI, on its own port, so evertap tells its requests apart by where they
   arrive, not by a Host header anyone can send. It reads which key signed a request where Garage
   reads it: a presigned link's query before any Authorization header, and a form upload's own
@@ -109,7 +113,7 @@ that file acts as you. `evertap logout` revokes it.
   their users can run programs there. From anywhere else, and in `local` mode, it takes the
   connection's own address. A proxy on this machine must add the address it saw to
   `X-Forwarded-For`, not pass on what the caller sent, or callers can pretend to be someone else
-  ([Reverse proxies](proxies.md)).
+  ([Reverse proxies](proxies.mdx)).
 
 ## Plain HTTP
 
@@ -136,16 +140,22 @@ evertap keeps no Cloudflare credential. The access you approve in Cloudflare, or
 give setup, stays in the process that makes the change, the server for Settings or setup's own, for
 that one change. evertap never writes it to disk or a log, or sends it to your browser, and gives
 approved access back to Cloudflare as soon as the change is done
-([Cloudflare Tunnel](cloudflare.md#what-you-approve)).
+([Cloudflare Tunnel](cloudflare.mdx#what-you-approve)).
 
 Treat a backup or a copy of the data directory as you would those passwords. The data itself is in
 Docker volumes whose names start with `evertap`, which a backup of the data directory does not
 include.
 
+<Callout type="warn">
+
 Anyone who can use Docker on that machine can read the same secrets from the containers, and can do
 anything else as root. Add to the `docker` group only users you would trust with root.
 
+</Callout>
+
 ## What evertap connects to
+
+<Outbound />
 
 evertap has no telemetry and no account, and sends nothing about your data or your machine. On its
 own, it connects to:
@@ -156,9 +166,9 @@ own, it connects to:
   one request for `https://github.com/caru-ini/evertap/releases/latest` and reads which release
   GitHub redirects it to. GitHub sees your IP address and the User-Agent `evertap`, nothing else.
   When a newer release is out, the UI, the Doctor, `evertap doctor`, and the log say so, with how to
-  [upgrade](limitations.md#upgrade). The demo and evertap run from source never check. Set
-  `EVERTAP_UPDATE_CHECK=0` to turn it off ([Configuration](configuration.md#evertap-serve)).
+  [upgrade](limitations.mdx#upgrade). The demo and evertap run from source never check. Set
+  `EVERTAP_UPDATE_CHECK=0` to turn it off ([Configuration](configuration.mdx#evertap-serve)).
 - Cloudflare, for a tunnel evertap created: the cloudflared that evertap runs for it keeps its links
-  to Cloudflare open ([Cloudflare Tunnel](cloudflare.md)). While you create, move, or remove that
+  to Cloudflare open ([Cloudflare Tunnel](cloudflare.mdx)). While you create, move, or remove that
   tunnel, Settings' server or setup also calls Cloudflare's API, and its OAuth endpoints to turn the
   code you paste into access and to give the access back.

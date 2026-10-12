@@ -1,0 +1,12 @@
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+@container diagram (width < 32rem) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

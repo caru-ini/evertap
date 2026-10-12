@@ -1,0 +1,8 @@
+.panels {
+  display: grid;
+  gap: 1rem;
+}
+
+.stack {
+  display: grid;
+}

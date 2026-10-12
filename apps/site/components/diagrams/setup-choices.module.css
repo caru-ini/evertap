@@ -1,0 +1,63 @@
+.command {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.choices {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--panel-2);
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  width: 1.25rem;
+
+  & svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--print-2);
+  }
+}
+
+.text {
+  display: grid;
+}
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.apps {
+  font-size: 0.75rem;
+  color: var(--print-3);
+}
+
+.address {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--print-2);
+  overflow-wrap: anywhere;
+}
+
+@container diagram (width < 32rem) {
+  .choice {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .address {
+    grid-column: 2;
+  }
+}

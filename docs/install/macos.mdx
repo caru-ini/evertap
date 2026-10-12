@@ -1,0 +1,100 @@
+---
+title: macOS
+description: Run evertap on your Mac, with Docker Desktop, OrbStack, or Colima.
+icon: Apple
+---
+
+<Steps>
+<Step>
+
+## Check Docker
+
+evertap needs macOS on Apple silicon or Intel, with Docker Desktop, OrbStack, or Colima running.
+evertap finds its socket on its own; if yours is elsewhere, set `EVERTAP_DOCKER_SOCKET`
+([Configuration](../configuration.mdx#evertap-serve)).
+
+<include>./_disk-space.mdx</include>
+
+</Step>
+<Step>
+
+## Run the install script
+
+```sh
+curl -fsSL https://evertap.dev/install.sh | sh
+```
+
+When it asks where it runs, answer **1**:
+
+```
+Where is this?
+  1) The machine that runs evertap (it needs Docker)
+  2) A laptop or CI that connects to evertap on another machine
+```
+
+<InstallScript system="macos" />
+
+It downloads the build for your Mac from the latest GitHub release, checks it against the release's
+`SHA256SUMS`, and installs it as `/usr/local/bin/evertap`, asking for sudo if it needs it.
+[The install script](../configuration.mdx#the-install-script) lists its settings.
+
+</Step>
+<Step>
+
+## Start evertap
+
+Every connection to a database or bucket goes through the `evertap serve` process. Run it in a
+terminal, or in `tmux` so it outlives your session:
+
+```sh
+evertap serve
+```
+
+While it is stopped, the databases keep running in Docker but nothing reaches them. There is no
+launchd job, so start it again after the Mac restarts and after an upgrade.
+
+</Step>
+<Step>
+
+## Set up and sign in
+
+On the Mac you develop on, choose This computer only: your apps on the Mac then reach the databases
+with nothing more to do.
+
+<include>./_setup.mdx</include>
+
+</Step>
+<Step>
+
+## Check it
+
+<include>./_check.mdx</include>
+
+</Step>
+</Steps>
+
+## Upgrade
+
+Run the install script again to upgrade evertap, or to repair it: it asks again, and installs even
+the version you have. Then restart `evertap serve` ([Upgrade](../limitations.mdx#upgrade)).
+
+## Install by hand
+
+From the [releases page](https://github.com/caru-ini/evertap/releases), download
+`evertap-darwin-<arch>.tar.gz` for your Mac and `SHA256SUMS`, then:
+
+```sh
+grep evertap-darwin-arm64.tar.gz SHA256SUMS | shasum -a 256 -c
+tar -xzf evertap-darwin-arm64.tar.gz
+sudo install -m 755 evertap-darwin-arm64/evertap /usr/local/bin/evertap
+```
+
+The archive also holds the license and the third-party notices. A file downloaded with a browser is
+quarantined, and macOS refuses to run it. Remove the quarantine with
+`xattr -d com.apple.quarantine evertap`.
+
+With the GitHub CLI, you can check that GitHub's release workflow built the archive:
+
+```sh
+gh attestation verify evertap-darwin-arm64.tar.gz --repo caru-ini/evertap
+```

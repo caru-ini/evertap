@@ -2,7 +2,7 @@ import { RESOURCE_ENGINES } from "@evertap/api/rules";
 import { cx } from "@evertap/ui/lib/cx";
 import { CheckIcon } from "@phosphor-icons/react/ssr";
 
-import { Arrow, Diagram, Mark } from "./parts.tsx";
+import { Arrow, Diagram, Mark } from "../../../components/diagrams/parts.tsx";
 
 import styles from "./create.module.css";
 

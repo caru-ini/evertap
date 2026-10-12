@@ -1,5 +1,7 @@
 ---
 title: Limitations
+description: What evertap does not do yet, what has not been tested, how to upgrade and uninstall it, and common questions.
+icon: Info
 ---
 
 evertap is early: this page lists what it does not do, what has not been tested, how to upgrade and
@@ -10,7 +12,7 @@ uninstall it, and answers to common questions.
 These are planned, but not in v0.1:
 
 - MCP for agents (`evertap mcp`). Agents use the CLI, which `evertap skills install` teaches them
-  ([Coding agents](cli.md#coding-agents)).
+  ([Coding agents](cli.mdx#coding-agents)).
 - `evertap connect` starting on its own when an app connects, with `ev.internal` set up by
   `evertap login`. For now, run `evertap connect` in a terminal and add the hosts line yourself.
 - `evertap update` and `evertap repair`. Upgrade with the install script ([below](#upgrade)).
@@ -28,7 +30,7 @@ will not:
 - Deploy apps, connect to git, or manage domains and certificates
 - Group resources into projects or environments
 - Give you a shell, a terminal, or raw logs on the machine running it
-- Set up Tailscale or WireGuard (you can use Tailscale with it: [Tailscale](modes.md#tailscale))
+- Set up Tailscale or WireGuard (you can use Tailscale with it: [Tailscale](modes.mdx#tailscale))
 - Read resources from a configuration file
 - Serve production traffic. Use evertap for development, CI, and previews, not as a production
   database.
@@ -43,25 +45,25 @@ will not:
 - **Presigned URLs** open only where `evertap connect` runs, or on the machine running evertap in
   `local` mode, unless the bucket is reachable from anywhere, which takes `network` or `cloudflare`
   mode and an address of buckets' own
-  ([Signed links that work anywhere](connecting.md#signed-links-that-work-anywhere)).
+  ([Signed links that work anywhere](connecting.mdx#signed-links-that-work-anywhere)).
 - **Buckets** have no versioning, object lock, bucket policies, ACLs, tags, or conditional writes
-  ([Buckets](connecting.md#buckets)).
+  ([Buckets](connecting.mdx#buckets)).
 - **Roles your app creates** in a PostgreSQL database cannot log in through evertap. Connect as
   the database's own user and use `SET ROLE`
-  ([Databases and roles your app creates](connecting.md#databases-and-roles-your-app-creates)).
+  ([Databases and roles your app creates](connecting.mdx#databases-and-roles-your-app-creates)).
 - **Users your app creates** in a MySQL database cannot log in through evertap either. Only the
-  user in the database's URL can ([MySQL](connecting.md#mysql)).
+  user in the database's URL can ([MySQL](connecting.mdx#mysql)).
 - **MariaDB's `mysql` client**, 11.4 and later, refuses the MySQL entry's self-signed certificate
-  unless given `--ssl-verify-server-cert=0` ([MySQL](connecting.md#mysql)).
+  unless given `--ssl-verify-server-cert=0` ([MySQL](connecting.mdx#mysql)).
 - **Redis clients** have to send the user in the URL. A password alone is refused
-  ([Redis](connecting.md#redis)).
+  ([Redis](connecting.mdx#redis)).
 - **A database's version is fixed** when it is created. To move to another, create a new database
   and copy the data.
 - **Every client has the same rights.** A paired CLI or an API key can use and delete every resource
   that is not protected. There are no scopes, roles, or expiry dates.
 - **The macOS loopback alias** that `evertap connect` asks for lasts until the Mac restarts.
 - **Under WSL**, Windows apps do not reach `ev.internal`, and WSL drops the `ev.internal` line when it
-  starts unless told not to ([Windows](connecting.md#windows)).
+  starts unless told not to ([Windows](connecting.mdx#windows)).
 - **Old images stay on disk.** When an evertap upgrade brings newer images, the old ones stay until
   you remove them ([Upgrade](#upgrade)).
 - **Run evertap where you trust every account.** evertap reaches each database on a loopback port
@@ -93,7 +95,7 @@ If you try one, an issue with what happened helps.
 evertap checks once a day whether a newer release is out. When one is, the UI's sidebar, the Doctor,
 `evertap doctor`, and the log say so, with what to run. On a laptop, `evertap doctor` and
 `evertap connect` say when its evertap is older than the one it uses. To stop the check, set
-`EVERTAP_UPDATE_CHECK=0` ([What evertap connects to](security.md#what-evertap-connects-to)).
+`EVERTAP_UPDATE_CHECK=0` ([What evertap connects to](security.mdx#what-evertap-connects-to)).
 
 Run the install script again, and give the same answer as when you installed it. It keeps your
 settings and skips setup:
@@ -120,15 +122,19 @@ the new version did not start. Without systemd, restart `evertap serve` yourself
 
 ## Uninstall
 
-On the machine running evertap, stop it, then remove everything it made, every database's data
-included:
+<Tabs items={["The machine running evertap", "A laptop"]}>
+<Tab value="The machine running evertap">
+
+<Callout type="warn">This removes every database and bucket, and their data.</Callout>
+
+Stop evertap, then remove everything it made:
 
 ```sh
 sudo systemctl disable --now evertap@$USER
 evertap uninstall
 ```
 
-`evertap uninstall` lists what it removes and asks you to type `uninstall` ([CLI](cli.md)). Then
+`evertap uninstall` lists what it removes and asks you to type `uninstall` ([CLI](cli.mdx)). Then
 remove what the install script installed, and the settings you made for the service:
 
 ```sh
@@ -141,9 +147,15 @@ sudo systemctl daemon-reload
 The images evertap downloaded stay; `docker image prune -a` removes them with every other unused
 image.
 
-On a laptop, stop `evertap connect`, run `evertap uninstall` to sign out and remove the agent skill
-and the `ev.internal` line, and delete the binary. On macOS, the loopback alias goes away at the
-next restart, or now with `sudo ifconfig lo0 -alias 127.77.0.1`.
+</Tab>
+<Tab value="A laptop">
+
+Stop `evertap connect`, run `evertap uninstall` to sign out and remove the agent skill and the
+`ev.internal` line, and delete the binary. On macOS, the loopback alias goes away at the next
+restart, or now with `sudo ifconfig lo0 -alias 127.77.0.1`.
+
+</Tab>
+</Tabs>
 
 ## Questions
 

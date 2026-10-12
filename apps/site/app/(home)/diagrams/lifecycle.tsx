@@ -1,6 +1,12 @@
 import { cx } from "@evertap/ui/lib/cx";
 
-import { Arrow, Diagram, Mark, ProtectedChip, TemporaryChip } from "./parts.tsx";
+import {
+  Arrow,
+  Diagram,
+  Mark,
+  ProtectedChip,
+  TemporaryChip,
+} from "../../../components/diagrams/parts.tsx";
 
 import styles from "./lifecycle.module.css";
 

@@ -1,6 +1,6 @@
 import { CloudIcon, HardDrivesIcon, LaptopIcon } from "@phosphor-icons/react/ssr";
 
-import { Arrow, Diagram } from "./parts.tsx";
+import { Arrow, Diagram } from "../../../components/diagrams/parts.tsx";
 
 import styles from "./same-env.module.css";
 

@@ -1,5 +1,7 @@
 ---
 title: Run evertap in Docker
+description: evertap's own image, started with Compose on Linux. Environment variables set everything.
+icon: Docker
 ---
 
 evertap is one binary, and it also comes as a container image, `ghcr.io/caru-ini/evertap`, for
@@ -8,6 +10,8 @@ anything.
 
 evertap drives the Docker it runs on, so its container needs three things most containers do not:
 Docker's socket, the data directory at the same path as on the host, and the host's network.
+
+<DockerNeeds />
 
 ## What you need
 
@@ -91,12 +95,12 @@ browsers open on your home network, and to warn when the UI listens where the in
 
 Set these under `environment:`. Each wins over anything saved, so evertap does not ask.
 
-| Where you open evertap from                                                   | Set                                                                                                           |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Devices on your network, over plain HTTP                                      | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 0.0.0.0`                                                       |
-| Behind your own proxy or tunnel on this machine, such as Caddy or cloudflared | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 127.0.0.1`, `EVERTAP_PUBLIC_URL: https://evertap.example.com`  |
-| Behind your own proxy run with Docker                                         | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 172.17.0.1`, `EVERTAP_PUBLIC_URL: https://evertap.example.com` |
-| Anywhere, through Cloudflare                                                  | `EVERTAP_MODE: cloudflare`, then `docker exec -it evertap evertap setup` ([Cloudflare Tunnel](cloudflare.md)) |
+| Where you open evertap from                                                   | Set                                                                                                            |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Devices on your network, over plain HTTP                                      | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 0.0.0.0`                                                        |
+| Behind your own proxy or tunnel on this machine, such as Caddy or cloudflared | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 127.0.0.1`, `EVERTAP_PUBLIC_URL: https://evertap.example.com`   |
+| Behind your own proxy run with Docker                                         | `EVERTAP_MODE: network`, `EVERTAP_LISTEN_HOST: 172.17.0.1`, `EVERTAP_PUBLIC_URL: https://evertap.example.com`  |
+| Anywhere, through Cloudflare                                                  | `EVERTAP_MODE: cloudflare`, then `docker exec -it evertap evertap setup` ([Cloudflare Tunnel](cloudflare.mdx)) |
 
 `EVERTAP_PUBLIC_URL` does not go with `EVERTAP_MODE: cloudflare`: the tunnel evertap runs has its own
 address, and evertap does not start with both. A tunnel you run yourself is a proxy on this machine.
@@ -125,7 +129,7 @@ replaces the containers whose image or settings changed and keeps their data.
 
 ## Uninstall
 
-This deletes every database and bucket and their data:
+<Callout type="warn">This deletes every database and bucket, and their data.</Callout>
 
 ```sh
 docker compose down

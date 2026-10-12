@@ -81,7 +81,7 @@ if [ -n "$service" ] && ! grep -qs '^[[:space:]]*EVERTAP_DOCKER_SOCKET=.' /etc/e
   socket=/var/run/docker.sock
   if ! curl -fsS --max-time 5 --unix-socket "$socket" -o /dev/null http://localhost/_ping 2>/dev/null; then
     if [ ! -S "$socket" ]; then
-      fail "Install Docker Engine and start it (https://docs.docker.com/engine/install/), then run this again. With rootless Docker, set EVERTAP_DOCKER_SOCKET in /etc/evertap/evertap.env first: https://evertap.dev/docs/install#how-docker-was-installed"
+      fail "Install Docker Engine and start it (https://docs.docker.com/engine/install/), then run this again. With rootless Docker, set EVERTAP_DOCKER_SOCKET in /etc/evertap/evertap.env first: https://evertap.dev/docs/install/linux#how-docker-was-installed"
     elif [ ! -w "$socket" ]; then
       fail "Let $user use Docker with sudo usermod -aG docker $user, log out and back in, then run this again"
     else
@@ -246,5 +246,5 @@ printf 'evertap %s is running. Its log: %s\n' "$new" "${sudo:+sudo }journalctl -
 if [ -n "$tty" ]; then
   "$dir/evertap" setup </dev/tty
 else
-  printf 'Next, run %s setup on this machine to choose how evertap is reached. Without a terminal, give it flags: https://evertap.dev/docs/install#set-up-and-sign-in\n' "$evertap"
+  printf 'Next, run %s setup on this machine to choose how evertap is reached. Without a terminal, give it flags: https://evertap.dev/docs/install/linux#set-up-and-sign-in\n' "$evertap"
 fi

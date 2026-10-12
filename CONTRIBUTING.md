@@ -69,7 +69,7 @@ serves no UI or an old build.
 ## Build the binary
 
 To run your change the way people run a release, or on a system with no release build, build the
-single binary and use it as [Install](docs/install.md) describes:
+single binary and use it as [Install](https://evertap.dev/docs/install) describes:
 
 ```sh
 pnpm build              # the web build and the single binary at dist/evertap
@@ -77,7 +77,7 @@ pnpm build              # the web build and the single binary at dist/evertap
 ./dist/evertap setup    # in another terminal, while it runs
 ```
 
-It needs Docker as an installed evertap does ([Requirements](docs/install.md#requirements)), and
+It needs Docker as an installed evertap does ([Requirements](https://evertap.dev/docs/install/linux#check-docker)), and
 uses the same data directory, ports, and `evertap-*` containers as live mode and an installed
 evertap, so run one of them at a time.
 

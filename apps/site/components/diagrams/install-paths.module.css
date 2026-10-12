@@ -1,0 +1,60 @@
+.panels {
+  display: grid;
+  gap: 1rem;
+}
+
+.hub {
+  display: grid;
+}
+
+/* Each client drops a line to one rule, which the arrow below carries on to the machine. */
+.clients {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 0.5rem;
+
+  & > li {
+    display: grid;
+    grid-template-rows: 1fr auto;
+
+    &::after {
+      content: "";
+      justify-self: center;
+      width: 1px;
+      height: 0.75rem;
+      background-color: var(--seam-2);
+    }
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: calc((100% - 1rem) / 6);
+    right: calc((100% - 1rem) / 6);
+    height: 1px;
+    background-color: var(--seam-2);
+  }
+}
+
+.join {
+  display: flex;
+  justify-content: center;
+}
+
+@container diagram (width < 32rem) {
+  .clients {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+
+    & > li::after,
+    &::after {
+      display: none;
+    }
+  }
+
+  .join {
+    padding-top: 0.5rem;
+  }
+}

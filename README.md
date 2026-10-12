@@ -25,7 +25,7 @@ connection details.
   agents a skill that tells them how, and `evertap login` offers it.
 
 Not in v0.1: MCP for agents, `evertap update` and `evertap repair`, and backups and restore
-([Not in this version](docs/limitations.md#not-in-this-version)).
+([Not in this version](https://evertap.dev/docs/limitations#not-in-this-version)).
 
 ## Install
 
@@ -44,7 +44,7 @@ to it, and never guesses. It installs the build for your system from the latest 
 `/usr/local/bin/evertap`, after checking it against the release's checksums. On the machine that
 runs evertap, on Linux with systemd, it also starts evertap as a service at boot and runs
 `evertap setup`. Without systemd, as on macOS, run `evertap serve` in a terminal. Run the script
-again to upgrade. [Install](docs/install.md) has the details and the requirements in full.
+again to upgrade. [Install](https://evertap.dev/docs/install) has the details and the requirements in full.
 
 Until you choose how other machines reach it, evertap listens on 127.0.0.1 alone, with the UI on
 `http://127.0.0.1:8080`. While it runs, choose on the same machine and as the same user:
@@ -68,7 +68,7 @@ the internet over plain HTTP: setup and the server's log warn about it.
 
 For Anywhere, through Cloudflare, setup or Settings creates the tunnel, its DNS records, and a Cache
 Rule once you approve evertap in Cloudflare, gives the access back, and runs cloudflared in Docker
-([Cloudflare Tunnel](docs/cloudflare.md)).
+([Cloudflare Tunnel](https://evertap.dev/docs/cloudflare)).
 
 Environment variables win over anything saved, and setup shows what they set instead of asking:
 
@@ -85,7 +85,7 @@ EVERTAP_MODE=network EVERTAP_LISTEN_HOST=0.0.0.0 evertap serve
 ```
 
 Under systemd, set them in `/etc/evertap/evertap.env` instead
-([Settings for the service](docs/install.md#settings-for-the-service)).
+([Settings for the service](https://evertap.dev/docs/install/linux#settings-for-the-service)).
 
 evertap answers only to requests that name its own address, `localhost`, an IP address, or in
 `network` mode its LAN name (`EVERTAP_HOST`, `evertap.local` unless set). Databases and buckets listen
@@ -122,7 +122,7 @@ says what likely holds it and how to free it.
 
 Presigned URLs point at `ev.internal` too. For links that must open on another device, such as in
 a preview deployment or on a phone, make the bucket reachable from anywhere through an address of
-buckets' own ([docs/connecting.md](docs/connecting.md#signed-links-that-work-anywhere)).
+buckets' own ([Connect from your laptop](https://evertap.dev/docs/connecting#signed-links-that-work-anywhere)).
 
 ## This machine only
 

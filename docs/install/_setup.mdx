@@ -1,0 +1,37 @@
+On the machine running evertap, as the user that runs it, while it runs:
+
+```sh
+evertap setup
+```
+
+<SetupChoices />
+
+Until you run it, evertap listens on 127.0.0.1 alone, and no other machine can reach it
+([What listens where](../security.mdx#what-listens-where)). Setup asks
+where you will open evertap from ([Choose how evertap is reached](../modes.mdx)), asks only what
+that choice needs, and applies it without a restart. Then it signs in your first browser:
+
+- For This computer only, it opens a signed-in browser on this machine.
+- For the others, it prints a one-time sign-in link and a QR code. Open the link in a browser, or
+  scan the code with your phone. It signs in one browser and expires in 10 minutes.
+
+Without a terminal, give the answers as flags, and setup asks nothing:
+
+```sh
+evertap setup --mode local                                                         # This computer only
+evertap setup --mode network --listen 0.0.0.0                                      # Devices on your network
+CLOUDFLARE_API_TOKEN=<token> evertap setup --mode cloudflare --zone example.com    # Anywhere, through Cloudflare
+evertap setup --mode network --url https://evertap.example.com                     # Behind your own proxy or tunnel
+```
+
+Run `evertap setup` again to change your answers; it offers to keep the address you gave before.
+Once you are signed in, Settings in the UI can make the same changes, as long as they keep your
+browser connected.
+
+### Signing in later
+
+- A new browser shows a code. On a device that is signed in, open `/device` (Clients → Add a
+  device) and enter it.
+- `evertap signin-link`, on the machine running evertap, prints another one-time link and QR code.
+  Use it when no browser is signed in anymore.
+- `evertap open`, on the machine running evertap, opens a signed-in browser there.

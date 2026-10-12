@@ -16,7 +16,7 @@ evertap is one box (a home server, a VPS, or your own computer) that hands out P
 | `apps/web`                    | The SPA (Vite, React, TanStack Router and Query)                                               | `apps/web/AGENTS.md`     |
 | `apps/server`                 | The server (Bun, Hono, the Docker Engine API) and the CLI                                      | `apps/server/AGENTS.md`  |
 | `apps/site`                   | evertap.dev: the introduction page and the docs (vinext, Fumadocs, Cloudflare Workers)         | `apps/site/AGENTS.md`    |
-| `docs`                        | The user documentation, read on GitHub and by the site                                         | `apps/site/AGENTS.md`    |
+| `docs`                        | The user documentation in MDX, the pages of evertap.dev/docs                                   | `apps/site/AGENTS.md`    |
 | `skills/evertap/SKILL.md`     | The agent skill: embedded in the binary for `evertap skills install`, and served by the site   |                          |
 | `packages/api`                | The oRPC router, zod schemas, and rules shared by every interface                              | `packages/api/AGENTS.md` |
 | `packages/ui`                 | Base UI wrappers and the logo, one CSS Module each, and the tokens in `src/styles/globals.css` |                          |

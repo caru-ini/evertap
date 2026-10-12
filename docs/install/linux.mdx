@@ -1,0 +1,208 @@
+---
+title: Linux
+description: Run evertap on a home server, a VPS, or your own Linux computer, or inside WSL on Windows.
+icon: Linux
+---
+
+<Steps>
+<Step>
+
+## Check Docker
+
+evertap needs Linux on x64 or arm64, with **Docker Engine 24 or later**.
+
+<Callout type="warn" title="Use Docker 28.0 or later">
+
+Or 28.3.3 or later with firewalld. Older versions let other machines on your network reach what
+Docker publishes on 127.0.0.1, which includes every database and bucket, without going through
+evertap. The Doctor warns about it.
+
+</Callout>
+
+Your user must be able to use Docker without sudo. Add it to the `docker` group, then log out and
+back in:
+
+```sh
+sudo usermod -aG docker $USER
+```
+
+Being in that group is as good as being root on that machine, so add only users you would trust
+with root. Docker from Snap and rootless Docker need one more step first
+([How Docker was installed](#how-docker-was-installed)).
+
+<include>./_disk-space.mdx</include>
+
+</Step>
+<Step>
+
+## Run the install script
+
+Run it as yourself, not with `sudo`:
+
+```sh
+curl -fsSL https://evertap.dev/install.sh | sh
+```
+
+When it asks where it runs, answer **1**:
+
+```
+Where is this?
+  1) The machine that runs evertap (it needs Docker)
+  2) A laptop or CI that connects to evertap on another machine
+```
+
+<InstallScript system="linux" />
+
+It checks that your user can use Docker, and stops with what to do if not. Then it downloads the
+build for your system from the latest GitHub release, checks it against the release's
+`SHA256SUMS`, and installs it as `/usr/local/bin/evertap`, asking for sudo if it needs it. evertap
+keeps its data in your `~/.local/share/evertap`, where `evertap setup` and the other commands you
+run find it.
+
+Without a terminal, as when a script sets up the machine, set `EVERTAP_ROLE=host` on the `sh` side
+of the pipe. [The install script](../configuration.mdx#the-install-script) lists its other
+settings.
+
+</Step>
+<Step>
+
+## Keep evertap running
+
+Every connection to a database or bucket goes through the `evertap serve` process. While it is
+stopped, the databases keep running in Docker but nothing reaches them.
+
+<Tabs items={["With systemd", "Without systemd"]}>
+<Tab value="With systemd">
+
+The script installs the unit `evertap@.service` from the release in `/etc/systemd/system/` and
+enables `evertap@<you>`, which runs `evertap serve` at boot as the user who ran the script. It
+starts evertap, or restarts it, and waits up to 30 seconds for it to answer.
+
+- Read evertap's log with `journalctl -u evertap@$USER -f`. On start, it says where it listens and
+  what to do next.
+- The script replaces the unit each time it runs. Make changes of your own in a drop-in, which it
+  leaves alone: `sudo systemctl edit evertap@`.
+- To give evertap environment variables, see [Settings for the service](#settings-for-the-service).
+
+</Tab>
+<Tab value="Without systemd">
+
+Without systemd, the script installs the binary alone. Run evertap in a terminal, or in `tmux` so
+it outlives your session, and restart it after an upgrade:
+
+```sh
+evertap serve
+```
+
+</Tab>
+</Tabs>
+
+</Step>
+<Step>
+
+## Set up and sign in
+
+With systemd, the install script runs `evertap setup` for you on a first install. Without a
+terminal, it says to run `evertap setup` with flags instead.
+
+<include>./_setup.mdx</include>
+
+</Step>
+<Step>
+
+## Check it
+
+<include>./_check.mdx</include>
+
+</Step>
+</Steps>
+
+## WSL
+
+There is no Windows build, but evertap runs inside WSL as on any Linux. Follow the steps above
+inside WSL, with these differences:
+
+<Wsl />
+
+- Where WSL runs without systemd, the script installs the binary alone: run `evertap serve` yourself
+  ([Keep evertap running](#keep-evertap-running)).
+- Windows apps outside WSL do not reach `ev.internal`, because WSL passes only `127.0.0.1` on to
+  Windows. Run your apps inside WSL too.
+- WSL writes a new `/etc/hosts` each time it starts, which drops the `ev.internal` line that setup
+  adds for This computer only. [Keep it](../connecting.mdx#windows) with `generateHosts = false`.
+
+## How Docker was installed
+
+evertap finds Docker's socket in this order: `EVERTAP_DOCKER_SOCKET`, a `unix://` `DOCKER_HOST`,
+then the usual places of Docker Engine, Docker Desktop, OrbStack, Colima, and rootless Docker. Some
+installs need more:
+
+- **Docker from Snap** cannot read files in hidden folders of your home, which includes evertap's
+  data directory `~/.local/share/evertap`, so databases fail to start. Install Docker from
+  docker.com's packages instead, or set `EVERTAP_DATA_DIR` to a folder that is not hidden, such as
+  `~/evertap`, wherever you run `evertap` (see [Configuration](../configuration.mdx)).
+- **Rootless Docker** stops when you log out, and the databases with it. Run
+  `sudo loginctl enable-linger $USER` and `systemctl --user enable docker` so it keeps running. The
+  systemd service has no `XDG_RUNTIME_DIR`, so set
+  `EVERTAP_DOCKER_SOCKET=/run/user/<your uid>/docker.sock` in its
+  [environment file](#settings-for-the-service) before you run the install script.
+
+The Doctor warns about both.
+
+## Settings for the service
+
+Most installs need no environment variables, since `evertap setup` saves its answers. To set one for
+the service, put it in `/etc/evertap/evertap.env`, which the unit reads if it exists. Start from the
+example
+[`contrib/systemd/evertap.env`](https://github.com/caru-ini/evertap/blob/main/contrib/systemd/evertap.env),
+remove the `#` before what you need, and restart the service:
+
+```sh
+sudo mkdir -p /etc/evertap
+curl -fsSL https://raw.githubusercontent.com/caru-ini/evertap/main/contrib/systemd/evertap.env |
+  sudo tee /etc/evertap/evertap.env > /dev/null
+sudoedit /etc/evertap/evertap.env
+sudo systemctl restart evertap@$USER
+```
+
+Set only what you need: a variable fixes its setting, and setup can no longer change it
+([Configuration](../configuration.mdx)). If you set `EVERTAP_DATA_DIR` there, set it in your shell
+too, or `evertap setup`, the install script, and the other commands on that machine cannot find the
+running evertap.
+
+## Upgrade
+
+Run the install script again to upgrade evertap, or to repair it: it asks again, and installs even
+the version you have. With systemd, it keeps the binary it replaces as `evertap.prev` beside the new
+one. If the new evertap does not answer, it puts that one back and starts it again
+([Upgrade](../limitations.mdx#upgrade)).
+
+## Install by hand
+
+From the [releases page](https://github.com/caru-ini/evertap/releases), download
+`evertap-linux-<arch>.tar.gz` for your system and `SHA256SUMS`, then:
+
+```sh
+grep evertap-linux-x64.tar.gz SHA256SUMS | sha256sum -c
+tar -xzf evertap-linux-x64.tar.gz
+sudo install -m 755 evertap-linux-x64/evertap /usr/local/bin/evertap
+```
+
+The archive also holds the license, the third-party notices, and the systemd unit
+`evertap@.service`. To run evertap at boot without the install script, install the unit from the
+same archive, and enable it for your own user, whose `~/.local/share/evertap` holds evertap's data:
+
+```sh
+sudo cp evertap-linux-x64/evertap@.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now evertap@$USER
+```
+
+The unit runs `/usr/local/bin/evertap`; if you installed it elsewhere, change `ExecStart`. After
+each upgrade by hand, restart it with `sudo systemctl restart evertap@$USER`.
+
+With the GitHub CLI, you can check that GitHub's release workflow built the archive:
+
+```sh
+gh attestation verify evertap-linux-x64.tar.gz --repo caru-ini/evertap
+```
