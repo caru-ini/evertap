@@ -70,7 +70,9 @@ For Anywhere, through Cloudflare, setup or Settings creates the tunnel, its DNS 
 Rule once you approve evertap in Cloudflare, gives the access back, and runs cloudflared in Docker
 ([Cloudflare Tunnel](https://evertap.dev/docs/cloudflare)).
 
-Environment variables win over anything saved, and setup shows what they set instead of asking:
+Environment variables win over anything saved, and setup shows what they set instead of asking.
+While one is set, neither setup nor Settings can change its setting, so set them only where nothing
+is asked, as in [evertap's image](https://evertap.dev/docs/docker):
 
 | Variable              | What it sets                                                                                                                                                               |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -78,13 +80,7 @@ Environment variables win over anything saved, and setup shows what they set ins
 | `EVERTAP_LISTEN_HOST` | Where the UI listens: `127.0.0.1` behind a proxy on this machine (the default), `0.0.0.0` for your home network, or Docker's bridge address behind a proxy run with Docker |
 | `EVERTAP_PUBLIC_URL`  | The address browsers open evertap at, such as `https://evertap.example.com`; sign-in links point there                                                                     |
 
-For your home network over plain HTTP:
-
-```sh
-EVERTAP_MODE=network EVERTAP_LISTEN_HOST=0.0.0.0 evertap serve
-```
-
-Under systemd, set them in `/etc/evertap/evertap.env` instead
+Under systemd, set them in `/etc/evertap/evertap.env`
 ([Settings for the service](https://evertap.dev/docs/install/linux#settings-for-the-service)).
 
 evertap answers only to requests that name its own address, `localhost`, an IP address, or in
