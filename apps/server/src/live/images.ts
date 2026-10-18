@@ -14,8 +14,8 @@ export const DATABASE_IMAGES: Record<DatabaseEngine, Record<string, string>> = {
     "15": "pgvector/pgvector:pg15@sha256:47af0b65960b14f1c6945aa4ccae37836c632e9a6fe0eea9160936e616e5b2e9",
   },
   mysql: {
-    "9.7": "mysql:9.7@sha256:e2bde46db6563855d7177adb5f0b57b9dc663f5a20927a90f4259d3312068497",
-    "8.4": "mysql:8.4@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242",
+    "9.7": "mysql:9.7@sha256:c7cb87a9822f499375287930cbff71d6d3b201e346b45108b1115b435ee2df13",
+    "8.4": "mysql:8.4@sha256:24989179f58856db763f418010c1169fecc944e3ec1ea7e921572d83eb070f70",
   },
   redis: {
     "8.10": "redis:8.10@sha256:2c2dff791878316e3b083188be0d578423b24813cdda5de0e80ea4f7b3e6bfd6",
