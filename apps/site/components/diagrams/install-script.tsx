@@ -36,6 +36,7 @@ const STEPS: Record<"linux" | "macos", Step[]> = {
   ],
   macos: [
     ASK,
+    { icon: <Brand name="docker" />, text: "Checks that Docker is running", code: "docker.sock" },
     INSTALL,
     { icon: <PowerIcon />, text: "Leaves starting evertap to you", code: "evertap serve" },
   ],

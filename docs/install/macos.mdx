@@ -34,8 +34,9 @@ Where is this?
 
 <InstallScript system="macos" />
 
-It downloads the build for your Mac from the latest GitHub release, checks it against the release's
-`SHA256SUMS`, and installs it as `/usr/local/bin/evertap`, asking for sudo if it needs it.
+It checks that Docker is running, and stops with what to do if not. Then it downloads the build for
+your Mac from the latest GitHub release, checks it against the release's `SHA256SUMS`, and installs
+it as `/usr/local/bin/evertap`, asking for sudo if it needs it.
 [The install script](../configuration.mdx#the-install-script) lists its settings.
 
 </Step>

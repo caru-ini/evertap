@@ -75,18 +75,41 @@ if [ "$role" = host ] && [ "$os" = linux ] && [ -d /run/systemd/system ]; then
 fi
 user="$(id -un)"
 
-# The service reaches Docker where its environment file says, or at Docker Engine's socket. Checked
-# before anything is installed, as evertap cannot start without it.
-if [ -n "$service" ] && ! grep -qs '^[[:space:]]*EVERTAP_DOCKER_SOCKET=.' /etc/evertap/evertap.env; then
-  socket=/var/run/docker.sock
-  if ! curl -fsS --max-time 5 --unix-socket "$socket" -o /dev/null http://localhost/_ping 2>/dev/null; then
-    if [ ! -S "$socket" ]; then
-      fail "Install Docker Engine and start it (https://docs.docker.com/engine/install/), then run this again. With rootless Docker, set EVERTAP_DOCKER_SOCKET in /etc/evertap/evertap.env first: https://evertap.dev/docs/install/linux#how-docker-was-installed"
-    elif [ ! -w "$socket" ]; then
-      fail "Let $user use Docker with sudo usermod -aG docker $user, log out and back in, then run this again"
-    else
-      fail "Start Docker with sudo systemctl start docker, then run this again"
-    fi
+# Checked before anything is installed, as evertap cannot start without Docker. The service reaches
+# it where its environment file says, or at Docker Engine's socket; evertap serve run by hand finds
+# it from this shell's environment, in the same order as evertap does.
+socket=""
+if [ -n "$service" ]; then
+  grep -qs '^[[:space:]]*EVERTAP_DOCKER_SOCKET=.' /etc/evertap/evertap.env || socket=/var/run/docker.sock
+elif [ "$role" = host ]; then
+  socket="${EVERTAP_DOCKER_SOCKET:-}"
+  case "${DOCKER_HOST:-}" in
+    unix:///*) [ -n "$socket" ] || socket="${DOCKER_HOST#unix://}" ;;
+  esac
+  if [ -z "$socket" ]; then
+    socket=/var/run/docker.sock
+    for found in /var/run/docker.sock "$HOME/.docker/run/docker.sock" "$HOME/.docker/desktop/docker.sock" \
+      "$HOME/.orbstack/run/docker.sock" "$HOME/.colima/default/docker.sock" ${XDG_RUNTIME_DIR:+"$XDG_RUNTIME_DIR/docker.sock"}; do
+      if [ -e "$found" ]; then
+        socket="$found"
+        break
+      fi
+    done
+  fi
+fi
+if [ -n "$socket" ] && ! curl -fsS --max-time 5 --unix-socket "$socket" -o /dev/null http://localhost/_ping 2>/dev/null; then
+  if [ "$os" = darwin ]; then
+    fail "Start Docker Desktop, OrbStack, or Colima, then run this again. If its socket is somewhere else, set EVERTAP_DOCKER_SOCKET to it"
+  elif [ ! -S "$socket" ] && [ -n "$service" ]; then
+    fail "Install Docker Engine and start it (https://docs.docker.com/engine/install/), then run this again. With rootless Docker, set EVERTAP_DOCKER_SOCKET in /etc/evertap/evertap.env first: https://evertap.dev/docs/install/linux#how-docker-was-installed"
+  elif [ ! -S "$socket" ]; then
+    fail "Start Docker, or install Docker Engine (https://docs.docker.com/engine/install/), then run this again"
+  elif [ ! -w "$socket" ]; then
+    fail "Let $user use Docker with sudo usermod -aG docker $user, log out and back in, then run this again"
+  elif [ -n "$service" ]; then
+    fail "Start Docker with sudo systemctl start docker, then run this again"
+  else
+    fail "Start Docker, then run this again"
   fi
 fi
 # The script finds the service's socket in the data directory, as the CLI does.
