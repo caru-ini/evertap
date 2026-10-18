@@ -197,6 +197,7 @@ if [ -z "$service" ]; then
   else
     # setup needs evertap serve running, which a fresh install does not have yet.
     printf 'Start evertap with %s serve, in a terminal or in tmux so it keeps running, then run %s setup beside it\n' "$evertap" "$evertap"
+    printf 'From a script, start it in the background instead: nohup %s serve >> ~/evertap.log 2>&1 &\n' "$evertap"
     printf 'Steps: https://evertap.dev/docs/install\n'
   fi
   exit 0
