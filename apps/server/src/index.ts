@@ -116,8 +116,11 @@ if (config.demo) {
     );
   }
   if (settings.mode.value === null) {
+    // Setup cannot change what a variable sets; only evertap's image is set up with variables.
     console.log(
-      "To choose how browsers elsewhere reach evertap, run evertap setup on this machine. For your home network, set EVERTAP_MODE=network and EVERTAP_LISTEN_HOST=0.0.0.0",
+      config.image
+        ? "To choose how browsers elsewhere reach evertap, set EVERTAP_MODE and EVERTAP_LISTEN_HOST: https://evertap.dev/docs/docker#choose-how-it-is-reached"
+        : "To choose how browsers elsewhere reach evertap, run evertap setup on this machine",
     );
     // Without a mode the forwarded address is not taken: behind a proxy, everyone is 127.0.0.1.
     if (settings.publicUrl.source === "env") {
