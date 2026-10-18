@@ -20,6 +20,7 @@ Run `evertap status` first.
 - "Signed in yes": go ahead.
 - "Not signed in", or "Signed in no": ask the person to run `evertap login <url>` with the address
   they open evertap at. A person approves the sign-in in a browser; you cannot approve it yourself.
+- "evertap is not running on this machine": ask the person to start evertap on this machine.
 
 ## Create and find resources
 

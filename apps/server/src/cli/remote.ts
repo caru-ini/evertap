@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -7,6 +8,11 @@ import { RPCLink } from "@orpc/client/fetch";
 
 import { config } from "../config.ts";
 import { readSettings } from "./settings.ts";
+import { UsageError } from "./terminal.ts";
+
+/** What to do on the machine running evertap while `evertap serve` is not running. */
+export const NOT_RUNNING =
+  "evertap is not running on this machine as this user. Start it with evertap serve, then run this again. On a laptop, pair with evertap login instead";
 
 /** How this CLI reaches evertap, as `evertap status` reports it. */
 export type Target =
@@ -42,17 +48,29 @@ export const findTarget = async (): Promise<Target | null> => {
 };
 
 /** The next step when `findTarget` finds nothing. */
-export const signInHint = () =>
-  process.env.EVERTAP_API_KEY
-    ? "Set EVERTAP_URL to the address you open evertap at; EVERTAP_API_KEY needs it"
+export const signInHint = () => {
+  if (process.env.EVERTAP_API_KEY) {
+    return "Set EVERTAP_URL to the address you open evertap at; EVERTAP_API_KEY needs it";
+  }
+  // evertap serve keeps its records there, so this is the machine that runs it.
+  return existsSync(join(config.dataDir, "evertap.db"))
+    ? NOT_RUNNING
     : "Not signed in. Run evertap login <url> first";
+};
 
 export const clientFor = (target: Target): AppRouterClient => {
   if (target.kind === "local") {
     return createORPCClient(
       new RPCLink({
         url: "http://localhost/api/client/rpc",
-        fetch: (request, init) => fetch(request, { ...init, unix: target.socket }),
+        fetch: (request, init) =>
+          fetch(request, { ...init, unix: target.socket }).catch((error: unknown) => {
+            // An evertap serve that was killed leaves its socket behind, and nothing answers there.
+            const code = error instanceof Error && "code" in error ? error.code : undefined;
+            throw code === "ECONNREFUSED" || code === "ENOENT"
+              ? new UsageError(NOT_RUNNING)
+              : error;
+          }),
       }),
     );
   }

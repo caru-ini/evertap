@@ -183,6 +183,34 @@ describe("signing in", () => {
     expect((await run(["list"])).stderr).toBe("Not signed in. Run evertap login <url> first\n");
   });
 
+  test("says to start evertap serve on the machine that runs it, stale socket or none", async () => {
+    const stopped = join(home, "stopped");
+    await mkdir(stopped, { recursive: true });
+    await writeFile(join(stopped, "evertap.db"), "");
+    const notRunning =
+      "evertap is not running on this machine as this user. Start it with evertap serve, then run this again. On a laptop, pair with evertap login instead\n";
+    expect((await run(["doctor"], { EVERTAP_DATA_DIR: stopped })).stderr).toBe(notRunning);
+    // Killed, it leaves its socket behind with nothing listening.
+    const socket = join(stopped, "evertap.sock");
+    const killed = Bun.spawn([
+      process.execPath,
+      "-e",
+      `Bun.listen({ unix: ${JSON.stringify(socket)}, socket: { data() {} } }); setInterval(() => {}, 1000);`,
+    ]);
+    for (let tries = 0; tries < 100 && !(await exists(socket)); tries++) {
+      await Bun.sleep(20);
+    }
+    killed.kill(9);
+    await killed.exited;
+    for (const command of ["doctor", "status", "open"]) {
+      expect(await run([command], { EVERTAP_DATA_DIR: stopped })).toEqual({
+        stdout: "",
+        stderr: notRunning,
+        exitCode: 1,
+      });
+    }
+  });
+
   test("asks for EVERTAP_URL when only EVERTAP_API_KEY is set", async () => {
     const { stderr } = await run(["list"], { EVERTAP_API_KEY: "key" });
     expect(stderr).toContain("Set EVERTAP_URL");

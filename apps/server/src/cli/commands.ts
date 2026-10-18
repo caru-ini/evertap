@@ -42,7 +42,14 @@ import {
 import { cliBehind } from "../update-check.ts";
 import { VERSION } from "../version.ts";
 import { relayRefusal, startConnect } from "./connect.ts";
-import { type Target, clientFor, findTarget, localSocket, signInHint } from "./remote.ts";
+import {
+  NOT_RUNNING,
+  type Target,
+  clientFor,
+  findTarget,
+  localSocket,
+  signInHint,
+} from "./remote.ts";
 import {
   type Settings,
   normalizeUrl,
@@ -586,9 +593,7 @@ const doctor: Command = {
 const onThisMachine = async () => {
   const socket = await localSocket();
   if (!socket) {
-    fail(
-      "evertap is not running on this machine as this user. Start it with evertap serve, then run this again. On a laptop, pair with evertap login instead",
-    );
+    fail(NOT_RUNNING);
   }
   return clientFor({ kind: "local", socket });
 };
