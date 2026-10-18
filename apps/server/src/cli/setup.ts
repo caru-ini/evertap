@@ -737,8 +737,12 @@ const warnConflicts = async () => {
     address: { hostname: DATABASE_ADDRESS, port: RESOURCE_PORTS[engine] },
     portVariable: null,
   }));
-  for (const conflict of conflictsWith(published, listeners)) {
+  const conflicts = conflictsWith(published, listeners);
+  for (const conflict of conflicts) {
     warn(`${conflict.name} (Docker): ${conflict.message}`);
+  }
+  if (conflicts.length > 0) {
+    warn("To see these again, run evertap doctor");
   }
 };
 
