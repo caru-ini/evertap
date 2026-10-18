@@ -247,6 +247,18 @@ const connectThrough = async (url: string, database: { connectionUrl: string }, 
   return { sql, counts: () => ({ connects, closes }) };
 };
 
+test("logs where evertap listens once the settings move it", () => {
+  expect(output).toContain(
+    `evertap is listening on 127.0.0.1:${uiPort}; browsers open it at http://127.0.0.1:${uiPort}\n`,
+  );
+  expect(output).toContain(
+    "To choose how browsers elsewhere reach evertap, run evertap setup on this machine\n",
+  );
+  expect(output).toContain(
+    `evertap is listening on ${bridge}:${uiPort}; browsers open it at ${nginxUrl}\n`,
+  );
+});
+
 test("finds that each proxy reaches this evertap and passes on what it needs", async () => {
   expect(await machine.system.settings.check()).toEqual({
     url: nginxUrl,

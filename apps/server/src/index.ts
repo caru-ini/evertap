@@ -84,12 +84,23 @@ const startUi = () => {
   }
 };
 
+const listening = () => {
+  const url = access.current().publicUrl.value;
+  return `evertap is listening on ${formatAddress(access.ui())}${url ? `; browsers open it at ${url}` : ""}`;
+};
+let announced = listening();
+
 const ui = startUi();
+// The UI moves last, so once it has, so has everything else.
 access.follow(() => {
   try {
     ui.move(access.ui());
   } catch (error) {
     throw uiFailure(error);
+  }
+  if (listening() !== announced) {
+    announced = listening();
+    console.log(announced);
   }
 });
 
@@ -98,9 +109,7 @@ const url = settings.publicUrl.value;
 if (config.demo) {
   console.log(`evertap demo at ${url ?? formatAddress(access.ui())}: sample data, no sign-in`);
 } else {
-  console.log(
-    `evertap is listening on ${formatAddress(access.ui())}${url ? `; browsers open it at ${url}` : ""}`,
-  );
+  console.log(announced);
   if (
     settings.mode.value === "local" &&
     !(await resolve(DATABASE_HOST)).includes(DATABASE_ADDRESS)
