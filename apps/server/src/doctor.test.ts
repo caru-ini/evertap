@@ -151,11 +151,11 @@ describe("conflictsWith", () => {
 
   it("points at the variable that moves an entry on 127.0.0.1, where sharing it is not an option", () => {
     const [conflict] = conflictsWith(
-      [compose("shop-db-1", false, "127.0.0.1", 3306)],
-      [{ address: { hostname: "127.0.0.1", port: 3306 }, portVariable: "EVERTAP_MYSQL_PORT" }],
+      [compose("shop-db-1", false, "127.0.0.1", 4306)],
+      [{ address: { hostname: "127.0.0.1", port: 4306 }, portVariable: "EVERTAP_MYSQL_PORT" }],
     );
     expect(conflict?.message).toBe(
-      "Can't start while evertap listens at 127.0.0.1:3306, as it asks for 3306 on 127.0.0.1. Change it in its Compose file, or set EVERTAP_MYSQL_PORT to a free one",
+      "Can't start while evertap listens at 127.0.0.1:4306, as it asks for 4306 on 127.0.0.1. Change it in its Compose file, or set EVERTAP_MYSQL_PORT to a free one",
     );
   });
 

@@ -30,7 +30,7 @@ export function Listeners() {
           <Group label="Loopback alone">
             <ul className={styles.items}>
               <li>
-                <Item icon={<PlugIcon />} code="127.0.0.1: 6432 · 3306 · 6379 · 3900">
+                <Item icon={<PlugIcon />} code="127.0.0.1: 6432 · 4306 · 7379 · 4900">
                   Database and bucket entries
                 </Item>
               </li>

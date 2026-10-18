@@ -59,12 +59,13 @@ export const config = {
   hostChosen: process.env.EVERTAP_HOST !== undefined,
   /**
    * Each entry's port on 127.0.0.1, where the CLI's relay reaches it. Local mode keeps every entry
-   * on its standard port instead, as apps reach it there directly.
+   * on its standard port instead, as apps reach it there directly. Here each is its standard port
+   * plus 1000, as a database installed on the machine often holds the standard one on 127.0.0.1.
    */
   postgresPort: int(process.env.EVERTAP_POSTGRES_PORT, 6432),
-  mysqlPort: int(process.env.EVERTAP_MYSQL_PORT, 3306),
-  redisPort: int(process.env.EVERTAP_REDIS_PORT, 6379),
-  garagePort: int(process.env.EVERTAP_GARAGE_PORT, 3900),
+  mysqlPort: int(process.env.EVERTAP_MYSQL_PORT, 4306),
+  redisPort: int(process.env.EVERTAP_REDIS_PORT, 7379),
+  garagePort: int(process.env.EVERTAP_GARAGE_PORT, 4900),
   /**
    * The entry for buckets reached from anywhere, where a Cloudflare Tunnel or the person's proxy
    * sends their requests; it listens beside the UI.

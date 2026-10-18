@@ -101,12 +101,12 @@ describe("createAccess", () => {
 });
 
 describe("listenFailure", () => {
-  const address = { hostname: "127.0.0.1", port: 3306 };
+  const address = { hostname: "127.0.0.1", port: 4306 };
 
   it("says what holds the address and how to move off it", () => {
     expect(listenFailure(failing("EADDRINUSE"), address, "EVERTAP_MYSQL_PORT")).toEqual(
       new DataError(
-        "127.0.0.1:3306 is taken by another program. Stop that program, or set EVERTAP_MYSQL_PORT to a free one. To see what it is: sudo lsof -nP -iTCP:3306 -sTCP:LISTEN",
+        "127.0.0.1:4306 is taken by another program. Stop that program, or set EVERTAP_MYSQL_PORT to a free one. To see what it is: sudo lsof -nP -iTCP:4306 -sTCP:LISTEN",
       ),
     );
     expect(
