@@ -419,7 +419,7 @@ const login: Command = {
     const approve = `${base}/device?code=${code}`;
     print(`Code: ${code}`);
     print(`Approve it at ${approve}`);
-    openBrowser(approve);
+    await openBrowser(approve);
     for (;;) {
       await Bun.sleep(POLL_MS);
       const claimed = await client.clients.pairing.claim({ requestId: started.requestId });
@@ -604,9 +604,10 @@ const showSignInLink = async (client: AppRouterClient) => {
 
 const openSignedIn = async (client: AppRouterClient) => {
   const { url: link, expiresAt } = await client.session.link();
-  openBrowser(link);
   print(
-    `Opening evertap in your browser, signed in. If it does not open, open this link on this machine; it expires ${until(expiresAt)}:`,
+    (await openBrowser(link))
+      ? `Opening evertap in your browser, signed in. If it does not open, open this link on this machine; it expires ${until(expiresAt)}:`
+      : `No browser opened on this machine. Open this link in a browser on it to sign in; it expires ${until(expiresAt)}:`,
   );
   print(link);
 };

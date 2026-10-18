@@ -419,14 +419,18 @@ const askNames = async (suggested: TunnelNames | null): Promise<TunnelNames> => 
  */
 const approveInCloudflare = async () => {
   const approval = startApproval();
+  const opened = await openBrowser(approval.url);
   print();
-  print("Approve evertap in Cloudflare. If your browser does not open, open this link:");
+  print(
+    opened
+      ? "Approve evertap in Cloudflare. If your browser does not open, open this link:"
+      : "No browser opened on this machine. To approve evertap in Cloudflare, open this link:",
+  );
   print();
   print(approval.url);
   print();
   print("Cloudflare then sends you to evertap.dev, which shows a code to paste here. evertap uses");
   print("the access for this setup only and gives it back.");
-  openBrowser(approval.url);
   for (;;) {
     const pasted = await ask("? Paste the code, or press Enter to stop: ");
     if (pasted === "") {

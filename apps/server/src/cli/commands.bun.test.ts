@@ -1148,6 +1148,24 @@ describe("setup and open", () => {
     expect((await store.claimPairing(requestId)).status).toBe("approved");
   });
 
+  test("says when no browser opened, and gives the link to open instead", async () => {
+    const noBrowser = join(home, "no-browser");
+    await mkdir(noBrowser, { recursive: true });
+    for (const name of ["xdg-open", "open"]) {
+      await writeFile(join(noBrowser, name), "#!/bin/sh\nexit 3\n", { mode: 0o755 });
+    }
+    const { stdout, exitCode } = await run(["open"], {
+      ...onMachine,
+      PATH: `${noBrowser}:${onMachine.PATH}`,
+    });
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain(
+      "No browser opened on this machine. Open this link in a browser on it to sign in;",
+    );
+    expect(stdout).toContain("/signin#");
+    expect(await exists(opened)).toBe(false);
+  });
+
   test("doctor says when a newer release is out, and how to upgrade", async () => {
     const report = await store.doctor();
     store.doctor = () =>

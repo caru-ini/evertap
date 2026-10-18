@@ -20,8 +20,11 @@ export const warn = (text: string) => {
   process.stderr.write(`${text}\n`);
 };
 
-/** Opens `url` in this machine's browser, when it has one. */
-export const openBrowser = (url: string) => {
+/** How long an opener that cannot open a browser takes to fail, at most. */
+const OPEN_FAILS_MS = 1000;
+
+/** Opens `url` in this machine's browser; false when there is none to open, as over SSH. */
+export const openBrowser = async (url: string) => {
   const command =
     process.platform === "darwin"
       ? ["open", url]
@@ -29,9 +32,17 @@ export const openBrowser = (url: string) => {
         ? ["cmd", "/c", "start", "", url]
         : ["xdg-open", url];
   try {
-    Bun.spawn(command, { stdout: "ignore", stderr: "ignore" }).unref();
+    const child = Bun.spawn(command, { stdout: "ignore", stderr: "ignore" });
+    // An opener may stay until the browser it started closes, so one still running has opened it.
+    const stillRunning = new Promise<number>((resolve) => {
+      setTimeout(() => resolve(0), OPEN_FAILS_MS).unref();
+    });
+    const code = await Promise.race([child.exited, stillRunning]);
+    child.unref();
+    return code === 0;
   } catch {
-    // No browser here (a server over SSH): the printed link is enough.
+    // Not installed, as xdg-open on most servers.
+    return false;
   }
 };
 
