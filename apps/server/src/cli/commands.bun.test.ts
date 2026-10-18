@@ -594,6 +594,12 @@ describe("setup and open", () => {
     expect(await asRoot()).toEqual(
       setup.changes.length > 0 ? { args: ["sh", "-c", setup.script], input: setup.input } : null,
     );
+    if (setup.changes.length > 0) {
+      expect(stdout).toContain(
+        `So ev.internal reaches evertap, setup makes these changes with sudo:\n  ${setup.changes[0]}`,
+      );
+      expect(stdout).toContain("ev.internal now leads to evertap.\n");
+    }
     expect(stdout).toContain(
       'While evertap runs, programs that listen on 5432, 3306, 6379, 3900, 8080 on all addresses may fail to start. In Compose, publish them on 127.0.0.1, such as "127.0.0.1:5432:5432".',
     );
@@ -623,6 +629,9 @@ describe("setup and open", () => {
         ? { args: ["sh", "-c", removal.script], input: removal.input }
         : null,
     );
+    if (removal.changes.length > 0) {
+      expect(moved.stdout).toContain("ev.internal no longer leads here.\n");
+    }
   });
 
   test("sends no laptop to sign in again at the address only this machine opens", async () => {

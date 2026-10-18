@@ -750,12 +750,15 @@ const pointHere = async ({ current }: Step, saved: SavedSettings) => {
     fail(`${setup.refused}. Nothing was changed`);
   }
   if (setup.changes.length > 0) {
-    print(`So ${DATABASE_HOST} reaches evertap, with sudo:\n${byHand(setup.changes)}`);
+    print(
+      `So ${DATABASE_HOST} reaches evertap, setup makes these changes with sudo:\n${byHand(setup.changes)}`,
+    );
     if (!(await runAsRoot(setup))) {
       fail(
         `Could not finish with sudo, so nothing was saved. Make these changes as administrator, then run evertap setup again:\n${byHand(setup.changes)}`,
       );
     }
+    print(`${DATABASE_HOST} now leads to evertap.`);
   }
   return saved;
 };
@@ -768,10 +771,14 @@ const undoPointHere = async (_: Step, saved: SavedSettings) => {
   if (removal.changes.length === 0) {
     return;
   }
-  print(`${DATABASE_HOST} no longer needs to lead here. With sudo:\n${byHand(removal.changes)}`);
+  print(
+    `${DATABASE_HOST} no longer needs to lead here, so setup makes these changes with sudo:\n${byHand(removal.changes)}`,
+  );
   if (!(await runAsRoot(removal))) {
     warn(`Could not finish with sudo. To finish, as administrator:\n${byHand(removal.changes)}`);
+    return;
   }
+  print(`${DATABASE_HOST} no longer leads here.`);
 };
 
 const CHOICES: Record<AccessChoice, ChoiceSetup> = {
