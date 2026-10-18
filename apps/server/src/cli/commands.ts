@@ -1061,16 +1061,22 @@ export const COMMANDS: Record<string, Command> = {
   uninstall,
 };
 
+// The server, not the CLI, runs it, so it is not among the commands.
+const SERVE = { usage: "serve", summary: "Run evertap on this machine" };
+
 export const help = () => {
   print("evertap: databases and object storage from one box");
   print();
   print("Usage: evertap <command>");
   print();
-  for (const [usage, summary] of [
-    ["serve", "Run evertap on this machine"],
-    ...Object.values(COMMANDS).map((command) => [command.usage, command.summary]),
-  ]) {
+  for (const { usage, summary } of [SERVE, ...Object.values(COMMANDS)]) {
     print(`  evertap ${usage}`);
     print(`      ${summary}`);
   }
+};
+
+/** What `evertap <name> --help` prints; undefined when `name` is no command. */
+export const commandHelp = (name: string) => {
+  const command = name === "serve" ? SERVE : COMMANDS[name];
+  return command && `Usage: evertap ${command.usage}\n  ${command.summary}\n`;
 };

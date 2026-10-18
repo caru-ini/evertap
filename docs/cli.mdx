@@ -5,8 +5,8 @@ icon: TerminalWindow
 ---
 
 One `evertap` binary is both the server (`evertap serve`) and the CLI. `evertap help` lists every
-command with its flags. Errors go to standard error with the next step to take, and the exit status
-is 1.
+command with its flags, and `--help` after a command shows that one's. Errors go to standard error
+with the next step to take, and the exit status is 1.
 
 The CLI talks to the evertap on the same machine over its socket, which needs no sign-in, or to the
 one `evertap login` paired it with, or to `EVERTAP_URL` with `EVERTAP_API_KEY` in CI

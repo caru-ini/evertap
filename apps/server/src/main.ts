@@ -1,7 +1,7 @@
 import { DataError } from "@evertap/api/context";
 import { ORPCError } from "@orpc/client";
 
-import { COMMANDS, help } from "./cli/commands.ts";
+import { COMMANDS, commandHelp, help } from "./cli/commands.ts";
 import { syncSkill } from "./cli/skills.ts";
 import { UsageError } from "./cli/terminal.ts";
 
@@ -25,13 +25,17 @@ process.stdout.on("error", (error: NodeJS.ErrnoException) => {
   throw error;
 });
 
-if (name === "serve") {
+const usage = name === undefined ? undefined : commandHelp(name);
+if (usage !== undefined && (args.includes("--help") || args.includes("-h"))) {
+  process.stdout.write(usage);
+} else if (name === "serve") {
   await import("./index.ts");
 } else {
   const command = name === undefined ? undefined : COMMANDS[name];
   if (!command) {
     help();
-    process.exitCode = name === undefined || name === "help" || name === "--help" ? 0 : 1;
+    process.exitCode =
+      name === undefined || name === "help" || name === "--help" || name === "-h" ? 0 : 1;
   } else {
     // Those two change the skill themselves.
     if (name !== "skills" && name !== "uninstall") {

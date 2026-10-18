@@ -160,6 +160,17 @@ describe("arguments", () => {
     );
   });
 
+  test("--help shows a command's usage instead of running it", async () => {
+    expect(await run(["serve", "--help"])).toEqual({
+      stdout: "Usage: evertap serve\n  Run evertap on this machine\n",
+      stderr: "",
+      exitCode: 0,
+    });
+    const setup = await run(["setup", "--mode", "local", "-h"]);
+    expect(setup.exitCode).toBe(0);
+    expect(setup.stdout).toStartWith("Usage: evertap setup [--mode local|network|cloudflare]");
+  });
+
   test("an unknown command prints the help and fails", async () => {
     const { stdout, exitCode } = await run(["nope"]);
     expect(exitCode).toBe(1);
