@@ -5,6 +5,21 @@ Notable changes to evertap are listed here, and versions follow
 [git-cliff](https://git-cliff.org) writes each release's section from the subjects of its
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
+## [0.1.2](https://github.com/caru-ini/evertap/compare/v0.1.1...v0.1.2) - 2026-10-18
+
+### Bug Fixes
+
+- _(server)_ Show each command's usage for --help instead of running it
+- _(repo)_ Have the install script check Docker without systemd too
+- _(repo)_ Say how to start evertap in the background without systemd
+- _(server)_ Point the startup log at evertap setup, not variables
+- _(server)_ Log where evertap listens again after the settings move it
+- _(server)_ Make clear that setup itself edits the hosts file with sudo
+- _(server)_ Say when no browser opened, and give the link instead
+- _(server)_ Say that evertap doctor lists setup's clash warnings again
+- _(server)_ Say to start evertap serve when it is not running here
+- _(server)_ Leave 3306, 6379, and 3900 free outside local mode
+
 ## [0.1.1](https://github.com/caru-ini/evertap/compare/v0.1.0...v0.1.1) - 2026-10-12
 
 ### Bug Fixes
