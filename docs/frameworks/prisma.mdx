@@ -1,0 +1,106 @@
+---
+title: Prisma
+description: Use an evertap PostgreSQL or MySQL database with Prisma ORM 7. migrate dev creates its shadow database by itself, with no second URL to set.
+---
+
+Each evertap database runs on a PostgreSQL or MySQL instance of its own, and the user in its URL can
+create and drop databases there. Prisma Migrate works as it does on a database you run yourself:
+`migrate dev` creates its shadow database next to yours and drops it when done, so there is no
+`shadowDatabaseUrl` to set.
+
+## Create the database
+
+```sh
+evertap create postgres myapp     # or: evertap create mysql myapp
+evertap env myapp >> .env
+```
+
+`.env` gains the URL:
+
+```sh
+DATABASE_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/evertap_k3x9q2m7v1ab
+```
+
+On a laptop that reaches evertap on another machine, keep `evertap connect` running while you work
+([Connect from your laptop](../connecting.mdx#run-evertap-connect)).
+
+## Point Prisma at it
+
+`prisma init` writes a `prisma.config.ts` that reads `DATABASE_URL` from `.env`:
+
+```ts
+import "dotenv/config";
+import { defineConfig, env } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: { path: "prisma/migrations" },
+  datasource: { url: env("DATABASE_URL") },
+});
+```
+
+Set `provider` in `schema.prisma` to `postgresql` or `mysql` to match, and give the client the same
+URL through its driver adapter:
+
+<Tabs groupId="database" persist items={["PostgreSQL", "MySQL"]}>
+<Tab value="PostgreSQL">
+
+```ts
+import { PrismaPg } from "@prisma/adapter-pg";
+
+import { PrismaClient } from "./generated/prisma/client";
+
+export const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
+```
+
+</Tab>
+<Tab value="MySQL">
+
+```ts
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+
+import { PrismaClient } from "./generated/prisma/client";
+
+// The adapter takes the mysql:// URL as it is
+export const prisma = new PrismaClient({
+  adapter: new PrismaMariaDb(process.env.DATABASE_URL!),
+});
+```
+
+</Tab>
+</Tabs>
+
+## Migrate
+
+```sh
+npx prisma migrate dev --name init
+```
+
+`migrate dev` creates a shadow database named `prisma_migrate_shadow_db_<id>` on the same instance,
+checks your migrations there, and drops it. `prisma migrate reset` empties your database and applies
+every migration again.
+
+## Tests
+
+Prisma has no test database of its own. Create a second database for tests and run them with its
+URL; `dotenv` leaves a variable you set on the command line as it is.
+
+```sh
+evertap create postgres myapp-test
+DATABASE_URL="$(evertap url myapp-test)" npx prisma migrate deploy
+DATABASE_URL="$(evertap url myapp-test)" npm test
+```
+
+In CI, create it with `--temporary` and an API key
+([CI with an API key](../connecting.mdx#ci-with-an-api-key)).
+
+## Good to know
+
+- evertap does not offer PostgreSQL's own TLS. Leave `sslmode` out of the URL, or set it to
+  `disable`; `sslmode=require` fails.
+- Through `evertap connect`, connections can drop when evertap restarts or your network changes.
+  Have the pool replace them after about 30 minutes:
+  `new PrismaPg({ connectionString: process.env.DATABASE_URL, maxLifetimeSeconds: 1800 })`
+  ([Connection pools](../connecting.mdx#connection-pools)).

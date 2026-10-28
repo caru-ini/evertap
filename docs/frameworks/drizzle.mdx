@@ -1,0 +1,94 @@
+---
+title: Drizzle
+description: Use an evertap PostgreSQL or MySQL database with Drizzle ORM and Drizzle Kit, from the URL in .env to migrations and a database for tests.
+---
+
+Drizzle connects with the URL evertap gives each database, through the same drivers it uses
+anywhere else: `node-postgres` for PostgreSQL and `mysql2` for MySQL.
+
+## Create the database
+
+```sh
+evertap create postgres myapp     # or: evertap create mysql myapp
+evertap env myapp >> .env
+```
+
+`.env` gains the URL:
+
+```sh
+DATABASE_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/evertap_k3x9q2m7v1ab
+```
+
+On a laptop that reaches evertap on another machine, keep `evertap connect` running while you work
+([Connect from your laptop](../connecting.mdx#run-evertap-connect)).
+
+## Point Drizzle Kit at it
+
+In `drizzle.config.ts`:
+
+```ts
+import "dotenv/config";
+import { defineConfig } from "drizzle-kit";
+
+export default defineConfig({
+  dialect: "postgresql", // or "mysql"
+  schema: "./src/db/schema.ts",
+  dbCredentials: { url: process.env.DATABASE_URL! },
+});
+```
+
+## Connect from your app
+
+<Tabs groupId="database" persist items={["PostgreSQL", "MySQL"]}>
+<Tab value="PostgreSQL">
+
+```ts
+import { drizzle } from "drizzle-orm/node-postgres";
+
+export const db = drizzle(process.env.DATABASE_URL!);
+```
+
+</Tab>
+<Tab value="MySQL">
+
+```ts
+import { drizzle } from "drizzle-orm/mysql2";
+
+export const db = drizzle(process.env.DATABASE_URL!);
+```
+
+</Tab>
+</Tabs>
+
+## Migrate
+
+```sh
+npx drizzle-kit generate
+npx drizzle-kit migrate
+```
+
+`npx drizzle-kit push` applies the schema directly instead, without migration files.
+
+## Tests
+
+Drizzle Kit does not create databases. Create a second database for tests and run them with its
+URL; `dotenv` leaves a variable you set on the command line as it is.
+
+```sh
+evertap create postgres myapp-test
+DATABASE_URL="$(evertap url myapp-test)" npx drizzle-kit migrate
+DATABASE_URL="$(evertap url myapp-test)" npm test
+```
+
+The user in the URL can also create databases, so tests can make one per worker with
+`CREATE DATABASE`. In CI, create the test database with `--temporary` and an API key
+([CI with an API key](../connecting.mdx#ci-with-an-api-key)).
+
+## Good to know
+
+- evertap does not offer PostgreSQL's own TLS. Leave `sslmode` out of the URL, or set it to
+  `disable`; `sslmode=require` fails.
+- Through `evertap connect`, connections can drop when evertap restarts or your network changes.
+  Have the pool replace them after about 30 minutes:
+  `drizzle({ connection: { connectionString: process.env.DATABASE_URL!, maxLifetimeSeconds: 1800 } })`
+  ([Connection pools](../connecting.mdx#connection-pools)).

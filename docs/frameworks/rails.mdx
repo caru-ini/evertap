@@ -1,0 +1,75 @@
+---
+title: Ruby on Rails
+description: Use an evertap PostgreSQL or MySQL database with Rails, with database.yml, migrations, and a test database that stays apart from your development data.
+---
+
+Each evertap database runs on a PostgreSQL or MySQL instance of its own, and the user in its URL can
+create and drop databases there. `bin/rails db:create`, `db:test:prepare`, and parallel tests work
+as they do on a database you run yourself.
+
+## Create the database
+
+```sh
+evertap create postgres myapp     # or: evertap create mysql myapp
+evertap env myapp >> .env
+```
+
+Rails does not read `.env` by itself; the `dotenv` gem loads it. Add it to the `Gemfile`:
+
+```ruby
+gem "dotenv", groups: [:development, :test]
+```
+
+On a laptop that reaches evertap on another machine, keep `evertap connect` running while you work
+([Connect from your laptop](../connecting.mdx#run-evertap-connect)).
+
+## Keep tests off your development data
+
+Rails applies `DATABASE_URL` to whichever environment runs, tests included, so `bin/rails test`
+would run on your development database and its fixtures would delete the data there. Give each
+environment its own URL in `config/database.yml`, in place of their `database:` lines. A `url:`
+written there makes Rails ignore `DATABASE_URL`:
+
+```yaml
+development:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
+
+test:
+  <<: *default
+  url: <%= ENV["TEST_DATABASE_URL"] %>
+```
+
+In `.env`, copy the line and change only the database at the end:
+
+```sh
+DATABASE_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/evertap_k3x9q2m7v1ab
+TEST_DATABASE_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/myapp_test
+```
+
+## Migrate and test
+
+```sh
+bin/rails db:migrate
+bin/rails db:test:prepare     # creates myapp_test and loads the schema
+bin/rails test
+```
+
+With `parallelize` in `test_helper.rb`, each worker gets a database of its own on the same instance.
+
+## MySQL
+
+A `mysql://` URL uses the `mysql2` adapter. For Trilogy, map it in `config/application.rb`:
+
+```ruby
+config.active_record.protocol_adapters.mysql = "trilogy"
+```
+
+## Good to know
+
+- With `config.active_record.schema_format = :sql`, Rails runs `pg_dump` on your computer, and
+  `pg_dump` refuses a database of a newer major version than itself. Install the client of your
+  database's version, PostgreSQL 18 unless you picked another, or create the database with
+  `--version` to match your client.
+- evertap does not offer PostgreSQL's own TLS. Leave `sslmode` out of the URL, or set it to
+  `disable`; `sslmode=require` fails.

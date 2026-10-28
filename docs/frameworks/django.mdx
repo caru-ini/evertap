@@ -1,0 +1,69 @@
+---
+title: Django
+description: Use an evertap PostgreSQL or MySQL database with Django, with DATABASES from the URL, migrations, and test databases, parallel ones included.
+---
+
+Each evertap database runs on a PostgreSQL or MySQL instance of its own, and the user in its URL can
+create and drop databases there. `manage.py test` creates its test databases as it does on a
+database you run yourself, `--parallel` included.
+
+## Create the database
+
+```sh
+evertap create postgres myapp     # or: evertap create mysql myapp
+evertap env myapp >> .env
+```
+
+`.env` gains the URL:
+
+```sh
+DATABASE_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/evertap_k3x9q2m7v1ab
+```
+
+On a laptop that reaches evertap on another machine, keep `evertap connect` running while you work
+([Connect from your laptop](../connecting.mdx#run-evertap-connect)).
+
+## Read the URL in settings
+
+Django does not read `.env` or URLs by itself. `python-dotenv` loads the file, and `dj-database-url`
+turns the URL into `DATABASES`:
+
+```sh
+pip install python-dotenv dj-database-url "psycopg[binary]"   # mysqlclient for MySQL
+```
+
+In `settings.py`:
+
+```python
+import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASES = {
+    "default": dj_database_url.config(conn_max_age=1800, conn_health_checks=True),
+}
+```
+
+`conn_max_age` keeps a connection for up to 30 minutes, and `conn_health_checks` checks it before
+each request, since a connection through `evertap connect` can drop when evertap restarts or your
+network changes ([Connection pools](../connecting.mdx#connection-pools)).
+
+## Migrate and test
+
+```sh
+python manage.py migrate
+python manage.py test
+python manage.py test --parallel 4
+```
+
+`test` creates `test_` and your database's name, such as `test_evertap_k3x9q2m7v1ab`, on the same
+instance and drops it at the end; `--keepdb` keeps it for the next run. `--parallel` makes a copy
+for each process. On MySQL, Django copies it with the `mysqldump` and `mysql` commands, so install
+them first. MariaDB's, 11.4 and later, check the certificate of evertap's MySQL entry, which is
+self-signed, and stop ([MySQL](../connecting.mdx#mysql)).
+
+## Good to know
+
+- evertap does not offer PostgreSQL's own TLS. Leave `sslmode` out of the URL, or set it to
+  `disable`; `sslmode=require` fails.

@@ -1,0 +1,73 @@
+---
+title: Laravel
+description: Use an evertap PostgreSQL or MySQL database with Laravel, with DB_URL in .env, migrations, and tests on a database of their own, parallel ones included.
+---
+
+Each evertap database runs on a PostgreSQL or MySQL instance of its own, and the user in its URL can
+create and drop databases there. `php artisan migrate` and parallel testing create their databases
+as they do on a database you run yourself.
+
+## Create the database
+
+```sh
+evertap create postgres myapp     # or: evertap create mysql myapp
+evertap url myapp                 # prints the URL
+```
+
+Laravel reads the URL from `DB_URL`, not `DATABASE_URL`. In `.env`, set the connection and the URL:
+
+```sh
+DB_CONNECTION=pgsql     # mysql for MySQL
+DB_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/evertap_k3x9q2m7v1ab
+```
+
+The URL wins over `DB_HOST`, `DB_DATABASE`, and the rest, so those can stay.
+
+On a laptop that reaches evertap on another machine, keep `evertap connect` running while you work
+([Connect from your laptop](../connecting.mdx#run-evertap-connect)).
+
+## Migrate
+
+```sh
+php artisan migrate
+```
+
+## Tests
+
+A new Laravel app's `phpunit.xml` runs tests on SQLite in memory. To run them on evertap, remove
+these lines from it:
+
+```xml
+<env name="DB_CONNECTION" value="sqlite"/>
+<env name="DB_DATABASE" value=":memory:"/>
+<env name="DB_URL" value=""/>
+```
+
+Copy `.env` to `.env.testing`, which tests read instead, and change only the database at the end of
+its `DB_URL`:
+
+```sh
+DB_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/myapp_test
+```
+
+Then create that database and run the tests:
+
+```sh
+php artisan migrate --env=testing   # offers to create myapp_test
+php artisan test
+php artisan test --parallel
+```
+
+`--parallel` creates a database for each process and keeps them for the next run;
+`--recreate-databases` starts them over.
+
+## Good to know
+
+- `php artisan schema:dump` runs `pg_dump` on your computer, and `pg_dump` refuses a database of a
+  newer major version than itself. Install the client of your database's version, PostgreSQL 18
+  unless you picked another, or create the database with `--version` to match your client.
+- With a MySQL schema dump, `migrate` loads it with the `mysql` command. MariaDB's `mysql` client,
+  11.4 and later, checks the certificate of evertap's MySQL entry, which is self-signed, and stops
+  ([MySQL](../connecting.mdx#mysql)).
+- evertap does not offer PostgreSQL's own TLS. Keep `DB_SSLMODE` at its default, `prefer`, or set it
+  to `disable`; `require` fails.

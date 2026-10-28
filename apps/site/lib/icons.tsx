@@ -1,5 +1,6 @@
 import {
   ArrowsLeftRightIcon,
+  CodeIcon,
   DotsNineIcon,
   DownloadSimpleIcon,
   GitBranchIcon,
@@ -32,6 +33,7 @@ const ICONS: Record<string, Icon> = {
   Linux: brand("linux"),
   Windows: brand("windows"),
   ArrowsLeftRight: ArrowsLeftRightIcon,
+  Code: CodeIcon,
   DotsNine: DotsNineIcon,
   DownloadSimple: DownloadSimpleIcon,
   GitBranch: GitBranchIcon,
