@@ -4,8 +4,8 @@ description: Use an evertap PostgreSQL or MySQL database with Rails, with databa
 ---
 
 Each evertap database runs on a PostgreSQL or MySQL instance of its own, and the user in its URL can
-create and drop databases there. `bin/rails db:create`, `db:test:prepare`, and parallel tests work
-as they do on a database you run yourself.
+create and drop databases there. `bin/rails db:create` and `db:test:prepare` work as they do on a
+database you run yourself.
 
 ## Create the database
 
@@ -55,14 +55,21 @@ bin/rails db:test:prepare     # creates myapp_test and loads the schema
 bin/rails test
 ```
 
-With `parallelize` in `test_helper.rb`, each worker gets a database of its own on the same instance.
+On PostgreSQL, `parallelize` in `test_helper.rb` gives each worker a database of its own on the
+same instance. On MySQL, see [MySQL](#mysql).
 
 ## MySQL
 
-A `mysql://` URL uses the `mysql2` adapter. For Trilogy, map it in `config/application.rb`:
+A `mysql://` URL uses the `mysql2` adapter. For Trilogy, start both URLs in `.env` with
+`trilogy://` instead.
+
+Parallel tests in processes stop on MySQL with "Unknown database". Rails creates a worker's
+database only when connecting to it fails, and evertap's MySQL entry accepts the connection and
+reports the missing database at the first query instead. Run them in threads, which share the test
+database:
 
 ```ruby
-config.active_record.protocol_adapters.mysql = "trilogy"
+parallelize(workers: :number_of_processors, with: :threads)
 ```
 
 ## Good to know

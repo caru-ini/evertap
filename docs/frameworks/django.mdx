@@ -60,8 +60,7 @@ python manage.py test --parallel 4
 `test` creates `test_` and your database's name, such as `test_evertap_k3x9q2m7v1ab`, on the same
 instance and drops it at the end; `--keepdb` keeps it for the next run. `--parallel` makes a copy
 for each process. On MySQL, Django copies it with the `mysqldump` and `mysql` commands, so install
-them first. MariaDB's, 11.4 and later, check the certificate of evertap's MySQL entry, which is
-self-signed, and stop ([MySQL](../connecting.mdx#mysql)).
+them first.
 
 ## Good to know
 

@@ -21,21 +21,26 @@ evertap env myapp >> .env
 DATABASE_URL=postgres://evertap_k3x9q2m7v1ab:…@ev.internal:5432/evertap_k3x9q2m7v1ab
 ```
 
+If `.env` already has a `DATABASE_URL`, such as the sample one `prisma init` writes, replace that
+line with the one `evertap env myapp` prints instead. The sample ends without a line break, so
+appending to it joins the two lines into one URL Prisma cannot read.
+
 On a laptop that reaches evertap on another machine, keep `evertap connect` running while you work
 ([Connect from your laptop](../connecting.mdx#run-evertap-connect)).
 
 ## Point Prisma at it
 
-`prisma init` writes a `prisma.config.ts` that reads `DATABASE_URL` from `.env`:
+`prisma init` writes a config file, `prisma7.config.ts` or `prisma.config.ts` depending on the
+version, that loads `.env` and reads `DATABASE_URL`:
 
 ```ts
 import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: { path: "prisma/migrations" },
-  datasource: { url: env("DATABASE_URL") },
+  datasource: { url: process.env["DATABASE_URL"] },
 });
 ```
 
@@ -80,7 +85,8 @@ npx prisma migrate dev --name init
 
 `migrate dev` creates a shadow database named `prisma_migrate_shadow_db_<id>` on the same instance,
 checks your migrations there, and drops it. `prisma migrate reset` empties your database and applies
-every migration again.
+every migration again. On MySQL, it empties the database but stops with "No database selected"
+before applying them; run `npx prisma migrate deploy` after it.
 
 ## Tests
 
